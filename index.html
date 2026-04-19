@@ -1,1 +1,1891 @@
-<!-- Keep all the original HTML content here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Inventory Control Dashboard</title>
+<style>
+:root {
+  --blue-bg:    #E8F0F7;
+  --green-bg:   #E8F5E0;
+  --amber-bg:   #FFF8E8;
+  --red-wash:   #F5D5D5;
+  --amber-wash: #F5E8D9;
+  --gray:       #D9D9D9;
+
+  --chart-blue: #5B99D9;
+  --green:      #7CB342;
+  --amber:      #E8B366;
+  --red:        #D17C7C;
+
+  --text:       #2C2C2C;
+  --text-mid:   #666666;
+  --text-light: #999999;
+  --red-text:   #8B0000;
+  --amber-text: #7A4800;
+  --green-text: #2E7D32;
+
+  --sidebar-bg: #242220;
+  --sidebar-w:  240px;
+  --app-bg:     #EEF2F6;
+  --card-bg:    #FFFFFF;
+  --radius:     12px;
+  --shadow:     0 1px 4px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Calibri,Arial,sans-serif;background:var(--app-bg);color:var(--text);min-height:100vh;font-size:14px}
+
+/* ── APP SHELL ── */
+.app{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid #E2E8F0;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;overflow-y:auto;z-index:200;transition:transform .25s}
+.sb-brand{padding:22px 20px 18px;border-bottom:1px solid #E8EDF4}
+.sb-logo{display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:34px;height:34px;background:var(--chart-blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.sb-logo-text{font-size:14px;font-weight:700;color:var(--text);line-height:1.2}
+.sb-logo-sub{font-size:10px;color:var(--text-light);margin-top:1px;font-weight:400}
+
+.sb-nav{flex:1;padding:10px 0}
+.sb-section{margin-bottom:6px}
+.sb-section-label{font-size:10px;font-weight:600;color:#A8B5C4;text-transform:uppercase;letter-spacing:.9px;padding:12px 20px 5px}
+.sb-item{display:flex;align-items:center;gap:11px;padding:9px 18px;cursor:pointer;color:var(--text-mid);font-size:13px;font-weight:500;transition:all .15s;margin:1px 8px;border-radius:7px;user-select:none}
+.sb-item:hover{background:#F0F4F8;color:var(--text)}
+.sb-item.active{background:#E8F0F7;color:var(--text);font-weight:600}
+.sb-item.active .sb-icon{color:var(--chart-blue)}
+.sb-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0;opacity:.8}
+.sb-item.active .sb-icon{opacity:1}
+
+.sb-actions{padding:12px 16px;border-top:1px solid #E8EDF4}
+.sb-action-row{display:flex;gap:8px}
+.sb-action-btn{flex:1;padding:8px;background:#F5F7FA;color:var(--text-mid);border:1px solid #E2E8F0;border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;transition:all .15s;text-align:center}
+.sb-action-btn:hover{background:#E8F0F7;color:var(--text)}
+
+.sb-foot{padding:14px 20px;border-top:1px solid #E8EDF4}
+.sb-foot-text{font-size:10px;color:#B0BEC5;line-height:1.6}
+.sb-privacy{display:flex;align-items:center;gap:7px;margin-top:10px;padding:8px 10px;background:#F4FAF0;border:1px solid #D4EDCA;border-radius:7px}
+.sb-privacy-icon{font-size:12px;flex-shrink:0;opacity:.85}
+.sb-privacy-text{font-size:10px;color:#4A7A40;line-height:1.45;font-weight:500}
+
+/* ── MAIN CONTENT ── */
+.content{margin-left:var(--sidebar-w);flex:1;padding:36px 36px 60px;min-height:100vh}
+@media(max-width:900px){
+  .content{margin-left:0;padding:20px 16px 60px}
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .mob-bar{display:flex !important}
+}
+
+/* ── MOBILE TOP BAR ── */
+.mob-bar{display:none;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:100;margin:-20px -16px 20px}
+.mob-brand{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.mob-menu{background:none;border:none;color:var(--text-mid);font-size:22px;cursor:pointer;padding:4px}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190}
+.mob-overlay.open{display:block}
+
+/* ── PAGE SECTIONS ── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── GREETING ── */
+.greeting{margin-bottom:28px}
+.greeting-line{font-size:38px;font-weight:700;color:#6B7A8D;line-height:1.1;letter-spacing:-.5px}
+.greeting-accent{font-style:italic;color:#F2C94C;font-weight:700;text-shadow:0 0 40px rgba(242,201,76,.25)}
+.greeting-sub{font-size:14px;color:var(--text-mid);margin-top:7px}
+
+/* ── ALERT BANNER ── */
+.alert-banner{background:#FEFAE8;border:1px solid #E8D98A;border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;display:flex;gap:12px;align-items:flex-start}
+.alert-diamond{color:#C9A227;font-size:14px;margin-top:1px;flex-shrink:0}
+.alert-title{font-size:13px;font-weight:700;color:#7A6000;margin-bottom:3px}
+.alert-body{font-size:13px;color:#5A4800;line-height:1.5}
+.alert-banner.hidden{display:none}
+
+/* ── CTA ROW ── */
+.cta-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.cta-primary{background:var(--chart-blue);color:#fff;border:none;border-radius:var(--radius);padding:16px 22px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s;box-shadow:0 2px 8px rgba(91,153,217,.35)}
+.cta-primary:hover{background:#4A88C8}
+.cta-primary .cta-icon{font-size:18px}
+.cta-secondary{background:var(--card-bg);color:var(--text);border:1px solid var(--gray);border-radius:var(--radius);padding:16px 22px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s}
+.cta-secondary:hover{background:var(--blue-bg)}
+.cta-secondary .cta-icon{font-size:18px;opacity:.7}
+@media(max-width:600px){.cta-row{grid-template-columns:1fr}}
+
+/* ── STAT CARDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr}}
+.stat-card{background:var(--card-bg);border-radius:var(--radius);padding:22px 22px 18px;box-shadow:var(--shadow)}
+.stat-number{font-size:32px;font-weight:700;line-height:1;margin-bottom:8px}
+.stat-number.blue{color:var(--chart-blue)}
+.stat-number.green{color:var(--green-text)}
+.stat-number.amber{color:var(--amber-text)}
+.stat-number.red{color:var(--red-text)}
+.stat-label{font-size:14px;color:var(--text);font-weight:500;margin-bottom:3px}
+.stat-sub{font-size:12px;color:var(--text-mid)}
+
+/* ── BOTTOM GRID ── */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.bottom-grid{grid-template-columns:1fr}}
+.card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-head{padding:16px 20px 14px;border-bottom:1px solid #F0F0F0}
+.card-title{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.1px}
+.card-body{padding:18px 20px}
+
+/* Chart */
+#chart-canvas{width:100%;display:block}
+.chart-legend-wrap{margin-top:12px}
+.chart-note{font-size:12px;font-weight:500;color:var(--text-mid);margin-bottom:7px}
+.chart-legend{display:flex;flex-wrap:wrap;gap:6px 14px}
+.cl-item{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text-mid)}
+.cl-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;display:inline-block}
+.cl-dot-oos{background:repeating-linear-gradient(135deg,#F87171 0px,#F87171 2px,rgba(248,113,113,.25) 2px,rgba(248,113,113,.25) 6px) !important}
+
+/* Recent list */
+.person-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid #F5F5F5;cursor:pointer;transition:background .1s}
+.person-row:last-child{border-bottom:none}
+.person-row:hover .person-name{color:var(--chart-blue)}
+.person-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.person-info{flex:1}
+.person-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+.person-meta{font-size:12px;color:var(--text-mid);margin-bottom:5px}
+.person-tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.person-arrow{color:var(--text-light);font-size:16px}
+.card-sub{font-size:12px;color:var(--text-mid);font-style:italic;margin-bottom:4px;padding:0 20px;padding-top:10px}
+
+/* ── INNER PAGE STYLES (Inventory, Movements, Profit) ── */
+.page-head{margin-bottom:22px}
+.page-title{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.page-sub{font-size:13px;color:var(--text-mid);margin-top:4px}
+
+/* Toolbar */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.search{flex:1;min-width:180px;padding:9px 13px;font-family:inherit;font-size:13px;border:1px solid var(--gray);border-radius:8px;background:#fff;color:var(--text)}
+.search:focus{outline:none;border-color:var(--chart-blue)}
+.fsel{padding:9px 11px;font-family:inherit;font-size:13px;border:1px solid var(--gray);border-radius:8px;background:#fff;color:var(--text)}
+.fsel:focus{outline:none;border-color:var(--chart-blue)}
+
+/* Tables */
+.tbl-card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:24px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--blue-bg);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text);padding:10px 14px;text-align:left;border-bottom:1px solid var(--gray);white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{background:#D5E5F2}
+thead th.no-sort{cursor:default}
+thead th.no-sort:hover{background:var(--blue-bg)}
+thead th.sort-asc::after{content:' ↑';opacity:.5}
+thead th.sort-desc::after{content:' ↓';opacity:.5}
+tbody tr{border-bottom:1px solid #F3F3F3;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:11px 14px;vertical-align:middle;font-size:13px}
+tbody tr:hover{background:#FAFAFA !important}
+tbody tr.status-healthy{background:#F4FAF0}
+tbody tr.status-reorder-soon{background:#FFFBEB}
+tbody tr.status-reorder-now{background:#FFF4ED}
+tbody tr.status-out-of-stock{background:#FFF0F0}
+.nr{text-align:right;font-variant-numeric:tabular-nums}
+.nc{text-align:center}
+
+/* Badges */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.bg{background:#E3F5D8;color:var(--green-text)}
+.ba{background:var(--amber-wash);color:var(--amber-text)}
+.br{background:var(--red-wash);color:var(--red-text)}
+.bb{background:#E3EEFF;color:#1A56A8}
+.bx{background:#F0F0F0;color:var(--text-mid)}
+/* restock status badges */
+.bs-healthy{background:#DCFCE7;color:#15803D}
+.bs-soon{background:#FEF9C3;color:#854D0E}
+.bs-now{background:#FFEDD5;color:#9A3412}
+.bs-oos{background:#FFE4E6;color:#9F1239}
+
+/* Stock indicator bar */
+.stock-bar-wrap{display:flex;align-items:center;gap:7px}
+.stock-bar-track{flex:1;min-width:48px;height:5px;border-radius:4px;background:#EBEBEB;overflow:hidden}
+.stock-bar-fill{height:100%;border-radius:4px;transition:width .3s}
+.stock-bar-fill.healthy{background:#4ADE80}
+.stock-bar-fill.soon{background:#FCD34D}
+.stock-bar-fill.now{background:#FB923C}
+.stock-bar-fill.oos{background:#F87171}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--gray);border-radius:8px;transition:all .14s;white-space:nowrap}
+.btn-primary{background:var(--chart-blue);color:#fff;border-color:var(--chart-blue)}
+.btn-primary:hover{background:#4A88C8}
+.btn-ghost{background:#fff;color:var(--text)}
+.btn-ghost:hover{background:var(--blue-bg)}
+.btn-danger{background:var(--red-wash);color:var(--red-text);border-color:var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:15px;padding:3px 6px;border-radius:5px;transition:color .1s}
+.icon-btn:hover{color:var(--text)}
+
+/* Page section header */
+.sec-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-mid);padding:14px 0 8px}
+
+/* Info pill */
+.info-pill{background:var(--amber-bg);border:1px solid #E8D9A0;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--amber-text);margin-top:12px}
+
+/* Profit summary cards */
+.profit-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:900px){.profit-stats{grid-template-columns:1fr 1fr}}
+
+/* Empty state */
+.empty{text-align:center;padding:56px 20px;color:var(--text-mid)}
+.empty-icon{font-size:36px;margin-bottom:12px}
+.empty-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+.empty-sub{font-size:13px}
+
+/* ── MODALS ── */
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:center;justify-content:center;padding:16px}
+.modal-wrap.open{display:flex}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-head{background:var(--blue-bg);padding:16px 22px;border-bottom:1px solid var(--gray);font-size:14px;font-weight:700;color:var(--text);display:flex;justify-content:space-between;align-items:center;border-radius:14px 14px 0 0}
+.modal-body{padding:22px}
+.modal-foot{padding:14px 22px;border-top:1px solid #F0F0F0;display:flex;gap:10px;justify-content:flex-end;border-radius:0 0 14px 14px}
+
+/* Form */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fi{display:flex;flex-direction:column;gap:5px}
+.fi.full{grid-column:1/-1}
+.fi label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-mid)}
+.fi input,.fi select{padding:9px 12px;font-family:inherit;font-size:13px;border:1px solid var(--gray);border-radius:7px;background:#fff;color:var(--text)}
+.fi input:focus,.fi select:focus{outline:none;border-color:var(--chart-blue)}
+@media(max-width:520px){.fg{grid-template-columns:1fr}}
+
+/* Onboarding */
+.ob-wrap{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
+.ob{background:#fff;max-width:420px;width:100%;border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.18);overflow:hidden}
+.ob-head{background:linear-gradient(135deg,#2C5282 0%,#3A7BD5 100%);padding:28px 28px 22px;text-align:center}
+.ob-logo{font-size:26px;margin-bottom:10px}
+.ob-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.2px;margin-bottom:4px}
+.ob-tag{font-size:12px;color:rgba(255,255,255,.7);letter-spacing:.2px}
+.ob-body{padding:22px 24px 6px}
+.ob-step{display:flex;gap:14px;align-items:center;padding:11px 0;border-bottom:1px solid #F1F5F9}
+.ob-step:last-child{border-bottom:none}
+.ob-num{width:26px;height:26px;background:#EBF4FF;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--chart-blue);flex-shrink:0}
+.ob-sc{flex:1}
+.ob-sc .ob-st{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
+.ob-sc .ob-sd{font-size:11.5px;color:var(--text-light);margin-top:2px;line-height:1.45}
+.ob-protip{margin:14px 0 6px;background:#FEFCE8;border:1px solid #FDE68A;border-radius:9px;padding:11px 14px;display:flex;align-items:center;gap:10px}
+.ob-protip-icon{font-size:14px;flex-shrink:0}
+.ob-protip-text{font-size:11.5px;color:#92400E;line-height:1.45}
+.ob-foot{padding:16px 24px 22px}
+.ob-cta{width:100%;padding:13px;background:var(--chart-blue);color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:700;letter-spacing:.1px;cursor:pointer;transition:background .15s}
+.ob-cta:hover{background:#2F6EB5}
+.ob-cta-sample{background:#fff;color:var(--chart-blue);border:2px solid var(--chart-blue);margin-bottom:8px}
+.ob-cta-sample:hover{background:#EBF4FF}
+.ob-hint{display:flex;align-items:center;gap:10px;background:#EBF4FF;border:1px solid #BDD7F5;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#1A4A7A;font-weight:500;line-height:1.4}
+.ob-hint .hint-icon{font-size:16px;flex-shrink:0}
+.ob-hint .hint-text{flex:1}
+.ob-hint .hint-close{background:none;border:none;color:#5B8FC4;font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;opacity:.7}
+.ob-hint .hint-close:hover{opacity:1}
+
+/* Confirm */
+#confirm-msg{font-size:14px;color:var(--text);padding:4px 0 8px}
+
+/* ── MODE TOGGLE ── */
+.mode-toggle{display:flex;align-items:center;gap:0;background:#F0F4F8;border-radius:8px;padding:3px;border:1px solid var(--gray);margin-bottom:20px;width:fit-content}
+.mode-btn{padding:7px 18px;font-family:inherit;font-size:12px;font-weight:600;border:none;background:transparent;color:var(--text-mid);border-radius:6px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.mode-btn.active{background:#fff;color:var(--chart-blue);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.adv-section{background:#F8F6FF;border:1px solid #E0D9F5;border-radius:9px;padding:16px;margin-top:4px}
+.adv-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#6B50B8;margin-bottom:12px}
+.adv-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:520px){.adv-fields{grid-template-columns:1fr}}
+.cost-breakdown{background:#F0F7FF;border:1px solid #C8DEF5;border-radius:8px;padding:14px;margin-top:14px;font-size:12px}
+.cost-breakdown-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--chart-blue);margin-bottom:10px}
+.cost-line{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #E0EEF8}
+.cost-line:last-child{border-bottom:none;font-weight:700;font-size:13px;padding-top:8px;margin-top:4px}
+.cost-line.total{color:var(--text)}
+.cost-line-label{color:var(--text-mid)}
+.cost-line-val{font-weight:600;font-variant-numeric:tabular-nums}
+.profit-good{color:var(--green-text)}
+.profit-bad{color:var(--red-text)}
+
+/* ── COLUMN VISIBILITY TOGGLE ── */
+.col-toggle-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding:10px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:9px}
+.col-toggle-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-light);margin-right:4px;white-space:nowrap}
+.col-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;border:1.5px solid var(--gray);background:#fff;font-size:11px;font-weight:600;color:var(--text-mid);cursor:pointer;transition:all .14s;user-select:none;white-space:nowrap}
+.col-chip.active{background:var(--blue-bg);border-color:var(--chart-blue);color:var(--chart-blue)}
+.col-chip .chip-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.6}
+
+/* Hide columns by class */
+.hide-sku .col-sku{display:none}
+.hide-supplier .col-supplier{display:none}
+.hide-location .col-location{display:none}
+.hide-costprice .col-costprice{display:none}
+.hide-saleprice .col-saleprice{display:none}
+.hide-reorder .col-reorder{display:none}
+.hide-totalcost .col-totalcost{display:none}
+
+.sb-backup-divider{height:1px;background:#E8EDF4;margin:12px 0}
+.sb-backup-btn{background:#EBF4FF;color:#2563EB;border-color:#BFDBFE}
+.sb-backup-btn:hover{background:#DBEAFE;color:#1D4ED8}
+.sb-restore-btn{background:#F0FDF4;color:#16A34A;border-color:#BBF7D0}
+.sb-restore-btn:hover{background:#DCFCE7;color:#15803D}
+
+/* Toast */
+.backup-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:#1E293B;color:#fff;font-size:13px;font-weight:600;padding:11px 22px;border-radius:30px;box-shadow:0 8px 24px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:999;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.backup-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.backup-toast .toast-icon{font-size:15px}
+
+/* ── DASHBOARD INSIGHTS ── */
+.dash-section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text-mid);margin-bottom:12px;margin-top:4px}
+
+/* Today's Snapshot */
+.snapshot-panel{border-radius:var(--radius);padding:18px 20px;margin-bottom:22px;display:flex;flex-direction:column;gap:8px}
+.snapshot-panel.good{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1px solid #BBF7D0}
+.snapshot-panel.warn{background:linear-gradient(135deg,#FFFBEB,#FEF9C3);border:1px solid #FDE68A}
+.snapshot-panel.alert{background:linear-gradient(135deg,#FFF7ED,#FFEDD5);border:1px solid #FED7AA}
+.snapshot-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;opacity:.7;margin-bottom:2px}
+.snapshot-line{font-size:15px;font-weight:600;color:var(--text);line-height:1.5;display:flex;align-items:center;gap:8px}
+.snapshot-line .snap-icon{font-size:17px;flex-shrink:0}
+
+/* Summary grid */
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:900px){.summary-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.summary-grid{grid-template-columns:1fr}}
+.summary-card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;display:flex;align-items:flex-start;gap:14px}
+.summary-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.summary-body{flex:1;min-width:0}
+.summary-value{font-size:22px;font-weight:700;color:var(--text);line-height:1.1;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.summary-value-sm{font-size:15px;font-weight:700;line-height:1.3;white-space:normal}
+.summary-label{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.summary-sub{font-size:11px;color:var(--text-light);line-height:1.4}
+
+/* Cat bars */
+.cat-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.cat-name{font-size:12px;color:var(--text);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-track{flex:1;background:#EBEBEB;height:14px;border-radius:20px;overflow:hidden}
+.cat-fill{height:100%;background:var(--chart-blue);border-radius:20px;transition:width .4s}
+.cat-val{font-size:12px;font-weight:700;color:var(--text);width:70px;text-align:right}
+
+/* ══════════════════════════════════════════════
+   MOBILE-FIRST ENHANCEMENTS
+   ══════════════════════════════════════════════ */
+html{scroll-behavior:smooth}
+body{-webkit-text-size-adjust:100%}
+
+/* Global: minimum tap target for all interactive elements */
+.btn{min-height:44px}
+.icon-btn{min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center}
+
+/* Sticky table headers (page-scroll context on desktop) */
+thead th{position:sticky;top:0;z-index:3}
+
+/* Smooth touch scrolling on table wrappers */
+.tbl-wrap{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E2E8F0;z-index:200;padding-bottom:env(safe-area-inset-bottom,0);box-shadow:0 -2px 16px rgba(0,0,0,.08)}
+.mob-nav-inner{display:flex;align-items:stretch}
+.mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px 10px;background:none;border:none;font-family:inherit;font-size:10px;font-weight:600;color:#94A3B8;cursor:pointer;transition:color .15s;min-height:58px;letter-spacing:.2px;-webkit-tap-highlight-color:transparent}
+.mob-nav-btn .mnb-icon{font-size:22px;line-height:1;transition:transform .15s}
+.mob-nav-btn.active{color:var(--chart-blue)}
+.mob-nav-btn.active .mnb-icon{transform:scale(1.12)}
+
+/* ── BREAKPOINT: TABLET & MOBILE ≤ 900px ── */
+@media(max-width:900px){
+  /* Show bottom nav, push content above it */
+  .mob-nav{display:block}
+  .content{padding-bottom:90px}
+
+  /* Taller, more comfortable top bar */
+  .mob-bar{min-height:54px;padding:0 16px;margin:-20px -16px 20px}
+  .mob-brand{font-size:14px;gap:10px}
+  .mob-menu{min-width:48px;min-height:48px;display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:8px}
+
+  /* Scale down greeting */
+  .greeting{margin-bottom:20px}
+  .greeting-line{font-size:26px}
+  .greeting-sub{font-size:13px}
+
+  /* Prevent iOS auto-zoom on inputs (must be ≥16px) */
+  .fi input,.fi select,.search,.fsel,input,select{font-size:16px !important}
+
+  /* Contained scrollable tables with sticky headers */
+  .tbl-wrap{overflow:auto;max-height:62vh;border-radius:0 0 var(--radius) var(--radius)}
+  thead th{position:sticky;top:0;z-index:3;background:var(--blue-bg);box-shadow:0 1px 0 var(--gray)}
+
+  /* Bigger row tap targets */
+  tbody td{padding:14px 12px}
+
+  /* Auto-collapse secondary columns — user can re-enable via chips */
+  #inv-tbl .col-sku,
+  #inv-tbl .col-supplier,
+  #inv-tbl .col-location,
+  #inv-tbl .col-totalcost,
+  #inv-tbl .col-reorder{display:none}
+  /* Explicit show (chip toggled on) overrides the auto-hide */
+  #inv-tbl:not(.hide-sku) .col-sku.mob-show{display:table-cell}
+  #inv-tbl:not(.hide-supplier) .col-supplier.mob-show{display:table-cell}
+  #inv-tbl:not(.hide-location) .col-location.mob-show{display:table-cell}
+  #inv-tbl:not(.hide-totalcost) .col-totalcost.mob-show{display:table-cell}
+  #inv-tbl:not(.hide-reorder) .col-reorder.mob-show{display:table-cell}
+
+  /* Col chips: bigger tap area */
+  .col-chip{padding:9px 14px;font-size:12px;min-height:38px}
+  .col-toggle-bar{gap:8px;padding:12px 14px}
+
+  /* Toolbar: stack vertically */
+  .toolbar{flex-direction:column;align-items:stretch;gap:10px}
+  .search{min-width:unset;width:100%;padding:12px 14px}
+  .fsel{width:100%;padding:12px 14px}
+
+  /* Bigger CTA buttons */
+  .cta-primary,.cta-secondary{padding:18px 20px;font-size:15px;min-height:58px}
+
+  /* Sidebar items: comfortable tap size */
+  .sb-item{min-height:46px;padding:11px 18px}
+  .sb-action-btn{padding:12px 8px;font-size:12px;min-height:42px}
+
+  /* btn-row */
+  .btn-row{gap:8px}
+  .btn-row .btn{min-height:46px;padding:11px 18px}
+
+  /* Summary cards: always 2-col on mobile */
+  .summary-grid{grid-template-columns:1fr 1fr}
+
+  /* Profit stats: 2-col */
+  .profit-stats{grid-template-columns:1fr 1fr}
+
+  /* Page head */
+  .page-title{font-size:21px}
+  .page-head{margin-bottom:16px}
+
+  /* Bottom-sheet modals */
+  .modal-wrap{align-items:flex-end;padding:0}
+  .modal{border-radius:22px 22px 0 0;max-height:92vh;max-width:100%;width:100%}
+  .modal-head{border-radius:22px 22px 0 0;padding:20px 22px 16px}
+  /* Drag handle indicator */
+  .modal-head::before{content:'';display:block;width:36px;height:4px;background:#D1D5DB;border-radius:2px;margin:0 auto 14px;position:relative;top:-4px}
+  .modal-foot{padding:16px 22px 24px}
+  .modal-foot .btn{flex:1;min-height:48px;justify-content:center}
+
+  /* Form inputs: larger touch targets */
+  .fi input,.fi select{padding:13px 14px;min-height:46px}
+  .fg{gap:16px}
+
+  /* Mode toggle: full width */
+  .mode-toggle{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .mode-btn{min-height:40px}
+}
+
+/* ── BREAKPOINT: SMALL PHONES ≤ 480px ── */
+@media(max-width:480px){
+  .content{padding:16px 14px 90px}
+  .mob-bar{margin:-16px -14px 16px}
+  .greeting-line{font-size:22px}
+  .cta-row{grid-template-columns:1fr}
+  .summary-grid{grid-template-columns:1fr 1fr}
+  .stat-card{padding:16px 14px 14px}
+  .stat-number{font-size:26px}
+  /* Full-bleed table card on tiny screens */
+  .tbl-card{border-radius:0;margin-left:-14px;margin-right:-14px}
+  .page-title{font-size:19px}
+}
+
+/* ── FLOATING ACTION BUTTON ── */
+.fab{display:none;position:fixed;bottom:76px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--chart-blue);color:#fff;border:none;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 4px 16px rgba(91,153,217,.5);z-index:150;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent}
+.fab:active{transform:scale(.93);box-shadow:0 2px 8px rgba(91,153,217,.4)}
+@media(max-width:900px){.fab{display:flex}}
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div class="ob-wrap" id="ob">
+  <div class="ob">
+    <div class="ob-head">
+      <div class="ob-logo">📦</div>
+      <div class="ob-title" id="ob-app-title">Inventory Control Dashboard</div>
+      <div class="ob-tag" id="ob-app-tag">Stock · Profit · Restock — all in one place</div>
+    </div>
+    <div class="ob-body">
+      <div class="ob-step"><div class="ob-num">1</div><div class="ob-sc"><div class="ob-st">Go to Products</div><div class="ob-sd">Add and manage your inventory from the sidebar.</div></div></div>
+      <div class="ob-step"><div class="ob-num">2</div><div class="ob-sc"><div class="ob-st">Choose Simple or Advanced Mode</div><div class="ob-sd">Simple tracks cost, price, and qty. Advanced adds material, labor, and fee breakdowns.</div></div></div>
+      <div class="ob-step"><div class="ob-num">3</div><div class="ob-sc"><div class="ob-st">Monitor highlighted rows</div><div class="ob-sd">Low and out-of-stock items are flagged automatically on the Dashboard.</div></div></div>
+      <div class="ob-protip"><span class="ob-protip-icon">💡</span><span class="ob-protip-text">Enter your product details below. Everything calculates automatically.</span></div>
+    </div>
+    <div class="ob-foot">
+      <button class="ob-cta ob-cta-sample" onclick="loadSampleData();dismissOB()">📦 Load Sample Data — see it in action</button>
+      <button class="ob-cta" onclick="dismissOB()">Start Fresh →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE OVERLAY -->
+<div class="mob-overlay" id="mob-overlay" onclick="closeSidebar()"></div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mob-nav" id="mob-nav" aria-label="Main navigation">
+  <div class="mob-nav-inner">
+    <button class="mob-nav-btn active" data-navpage="dashboard" onclick="switchPage('dashboard')">
+      <span class="mnb-icon">⊞</span><span>Dashboard</span>
+    </button>
+    <button class="mob-nav-btn" data-navpage="inventory" onclick="switchPage('inventory')">
+      <span class="mnb-icon">📦</span><span>Products</span>
+    </button>
+    <button class="mob-nav-btn" data-navpage="movements" onclick="switchPage('movements')">
+      <span class="mnb-icon">↕</span><span>Stock</span>
+    </button>
+    <button class="mob-nav-btn" data-navpage="profit" onclick="switchPage('profit')">
+      <span class="mnb-icon">💰</span><span>Profit</span>
+    </button>
+  </div>
+</nav>
+
+<!-- FLOATING ACTION BUTTON (mobile: Add Product shortcut) -->
+<button class="fab" id="fab" onclick="switchPage('inventory');openProductModal()" aria-label="Add product" title="Add Product">+</button>
+
+<!-- APP SHELL -->
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo">
+        <div class="sb-logo-icon">📦</div>
+        <div>
+          <div class="sb-logo-text" id="sb-app-name">Inventory Control</div>
+          <div class="sb-logo-sub" id="sb-brand-sub">Your Business</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section">
+        <div class="sb-section-label">Navigate</div>
+        <div class="sb-item active" data-page="dashboard" onclick="switchPage('dashboard')">
+          <span class="sb-icon">⊞</span> Dashboard
+        </div>
+        <div class="sb-item" onclick="switchPage('inventory');openProductModal()">
+          <span class="sb-icon">+</span> <span id="sb-add-item">Add Product</span>
+        </div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Inventory</div>
+        <div class="sb-item" data-page="inventory" onclick="switchPage('inventory')">
+          <span class="sb-icon">☰</span> <span id="sb-items-label">Products</span>
+        </div>
+        <div class="sb-item" data-page="movements" onclick="switchPage('movements')">
+          <span class="sb-icon">↕</span> Stock In/Out
+        </div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Insights</div>
+        <div class="sb-item" data-page="profit" onclick="switchPage('profit')">
+          <span class="sb-icon">$</span> Profit Analysis
+        </div>
+      </div>
+    </nav>
+
+    <div class="sb-actions">
+      <div class="sb-section-label" style="padding:0 0 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:#A8B5C4">CSV</div>
+      <div class="sb-action-row">
+        <button class="sb-action-btn" onclick="exportCSV()">↓ Export</button>
+        <label class="sb-action-btn" style="cursor:pointer">↑ Import<input type="file" accept=".csv" style="display:none" onchange="importCSV(event)"></label>
+      </div>
+      <div class="sb-backup-divider"></div>
+      <div class="sb-section-label" style="padding:0 0 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:#A8B5C4">Backup</div>
+      <div class="sb-action-row">
+        <button class="sb-action-btn sb-backup-btn" onclick="backupData()">☁ Save Backup</button>
+        <label class="sb-action-btn sb-restore-btn" style="cursor:pointer">↩ Restore<input type="file" accept=".json" style="display:none" onchange="restoreData(event)"></label>
+      </div>
+      <div class="sb-action-row" style="margin-top:8px">
+        <button class="sb-action-btn" style="flex:1" onclick="previewOnboarding()">Quick Start Guide</button>
+      </div>
+      <div class="sb-action-row" style="margin-top:8px">
+        <button class="sb-action-btn" style="flex:1;background:#F0FDF4;color:#16A34A;border-color:#BBF7D0" onclick="loadSampleData()">📦 Load Sample Data</button>
+      </div>
+      <div class="sb-action-row" style="margin-top:8px">
+        <button class="sb-action-btn" style="flex:1;background:#FFF0F0;color:#8B1A1A;border-color:#F5C0C0" onclick="clearData()">🗑 Clear All Data</button>
+      </div>
+    </div>
+
+    <!-- Backup toast -->
+    <div id="backup-toast" class="backup-toast"></div>
+
+    <div class="sb-foot">
+      <div class="sb-foot-text" id="sb-footer-line">Track stock, profit, and restock needs<br>— all in one place · Your Business</div>
+      <div class="sb-privacy">
+        <span class="sb-privacy-icon">🔒</span>
+        <span class="sb-privacy-text">Your data stays on your device. Nothing is stored online.</span>
+      </div>
+      <div style="margin-top:10px;font-size:9px;color:#C8D5E0;text-align:center;letter-spacing:.3px">Thrive Culture LLC</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+
+    <!-- MOBILE TOP BAR -->
+    <div class="mob-bar" id="mob-bar">
+      <div class="mob-brand">📋 Dashboard</div>
+      <button class="mob-menu" onclick="openSidebar()" aria-label="Open menu">☰</button>
+    </div>
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="greeting">
+        <div class="greeting-line">Good <span class="greeting-accent" id="greeting-word">morning.</span></div>
+        <div class="greeting-sub" id="greeting-sub">Here's where your business stands right now.</div>
+      </div>
+
+      <!-- Onboarding hint -->
+      <div class="ob-hint" id="ob-hint" style="display:none">
+        <span class="hint-icon">📝</span>
+        <span class="hint-text">Enter your product details below. Everything calculates automatically.</span>
+        <button class="hint-close" onclick="document.getElementById('ob-hint').style.display='none'" title="Dismiss">✕</button>
+      </div>
+
+      <!-- Today's Snapshot -->
+      <div class="snapshot-panel" id="snapshot-panel"></div>
+
+      <!-- CTA row -->
+      <div class="cta-row">
+        <button class="cta-primary" onclick="switchPage('inventory');openProductModal()">
+          <span class="cta-icon">+</span> Add a Product
+        </button>
+        <button class="cta-secondary" onclick="switchPage('movements');openMovementModal()">
+          <span class="cta-icon">↕</span> Log a Movement
+        </button>
+      </div>
+
+      <!-- Summary metrics -->
+      <div class="dash-section-label">Business Summary</div>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-icon" style="background:#EBF4FF;color:#2563EB">📦</div>
+          <div class="summary-body">
+            <div class="summary-value" id="s-inv-value">—</div>
+            <div class="summary-label" id="lbl-inv-value">Total Inventory Value</div>
+            <div class="summary-sub">cost basis of all stock on hand</div>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon" style="background:#DCFCE7;color:#16A34A">💰</div>
+          <div class="summary-body">
+            <div class="summary-value" id="s-profit-pot" style="color:var(--green-text)">—</div>
+            <div class="summary-label" id="lbl-profit-pot">Profit Potential</div>
+            <div class="summary-sub">if all stock sells at full price</div>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon" style="background:#FEF9C3;color:#A16207">⚠</div>
+          <div class="summary-body">
+            <div class="summary-value" id="s-below-reorder" style="color:var(--amber-text)">—</div>
+            <div class="summary-label" id="lbl-below-reorder">Below Reorder Level</div>
+            <div class="summary-sub">items needing attention now</div>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon" style="background:#F3E8FF;color:#7C3AED">🏆</div>
+          <div class="summary-body">
+            <div class="summary-value summary-value-sm" id="s-top-product">—</div>
+            <div class="summary-label" id="lbl-top-item">Top Profitable Product</div>
+            <div class="summary-sub" id="s-top-product-sub"></div>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon" style="background:#FFF1F2;color:#BE123C">📉</div>
+          <div class="summary-body">
+            <div class="summary-value summary-value-sm" id="s-low-margin">—</div>
+            <div class="summary-label" id="lbl-low-margin">Lowest Margin Product</div>
+            <div class="summary-sub" id="s-low-margin-sub"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom grid: chart + restock -->
+      <div class="dash-section-label" style="margin-top:8px">Stock Overview</div>
+      <div class="bottom-grid">
+        <div class="card">
+          <div class="card-head"><div class="card-title" id="lbl-profit-chart">Profit by Product</div></div>
+          <div class="card-body">
+            <canvas id="chart-canvas" height="160"></canvas>
+            <div class="chart-legend-wrap">
+              <div class="chart-note">Bar height = profit on current stock on hand.</div>
+              <div class="chart-legend">
+                <span class="cl-item"><span class="cl-dot" style="background:#4ADE80"></span>Healthy</span>
+                <span class="cl-item"><span class="cl-dot" style="background:#FCD34D"></span>Reorder Soon</span>
+                <span class="cl-item"><span class="cl-dot" style="background:#FB923C"></span>Reorder Now</span>
+                <span class="cl-item"><span class="cl-dot cl-dot-oos" style="background:#F87171"></span>Out of Stock</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div class="card-title" id="lbl-restock-card">Restock Needed</div></div>
+          <div class="card-sub">Click any item to view your full inventory.</div>
+          <div class="card-body" style="padding-top:4px" id="dash-restock-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── INVENTORY ── -->
+    <div class="page" id="page-inventory">
+      <div class="page-head">
+        <div class="page-title" id="inv-page-title">Products</div>
+        <div class="page-sub">Your full inventory. Click a column header to sort.</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="openProductModal()">+ <span id="btn-add-item">Add Product</span></button>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">↓ Export CSV</button>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer">↑ Import CSV<input type="file" accept=".csv" style="display:none" onchange="importCSV(event)"></label>
+      </div>
+      <div class="toolbar">
+        <input class="search" type="text" placeholder="Search name, SKU, supplier, location…" id="inv-search" oninput="renderInventory()">
+        <select class="fsel" id="inv-cat" onchange="renderInventory()"><option value="" id="opt-all-cats">All Categories</option></select>
+        <select class="fsel" id="inv-status" onchange="renderInventory()">
+          <option value="">All Statuses</option>
+          <option>Healthy</option><option>Reorder Soon</option><option>Reorder Now</option><option>Out of Stock</option>
+        </select>
+      </div>
+      <div class="col-toggle-bar" id="col-toggle-bar">
+        <span class="col-toggle-label">Show columns:</span>
+        <span class="col-chip active" data-col="sku" onclick="toggleCol('sku',this)"><span class="chip-dot"></span>SKU</span>
+        <span class="col-chip active" data-col="supplier" onclick="toggleCol('supplier',this)"><span class="chip-dot"></span><span id="chip-supplier">Supplier</span></span>
+        <span class="col-chip active" data-col="location" onclick="toggleCol('location',this)"><span class="chip-dot"></span><span id="chip-location">Storage Location</span></span>
+        <span class="col-chip active" data-col="costprice" onclick="toggleCol('costprice',this)"><span class="chip-dot"></span><span id="chip-costprice">Cost Price</span></span>
+        <span class="col-chip active" data-col="saleprice" onclick="toggleCol('saleprice',this)"><span class="chip-dot"></span><span id="chip-saleprice">Sale Price</span></span>
+        <span class="col-chip active" data-col="reorder" onclick="toggleCol('reorder',this)"><span class="chip-dot"></span><span id="chip-reorder">Reorder At</span></span>
+        <span class="col-chip active" data-col="totalcost" onclick="toggleCol('totalcost',this)"><span class="chip-dot"></span>Total Cost</span>
+      </div>
+      <div class="tbl-card">
+        <div class="tbl-wrap">
+          <table id="inv-tbl">
+            <thead><tr>
+              <th class="no-sort nc">#</th>
+              <th onclick="invSort('name')" id="th-item-name">Product Name</th>
+              <th onclick="invSort('category')" id="th-category">Category</th>
+              <th class="col-sku" onclick="invSort('sku')" id="th-sku">SKU</th>
+              <th class="col-supplier" onclick="invSort('supplier')" id="th-supplier">Supplier</th>
+              <th class="col-location" onclick="invSort('storageLocation')" id="th-location">Storage Location</th>
+              <th class="col-costprice nr" onclick="invSort('costPrice')">Cost ($)</th>
+              <th class="col-saleprice nr" onclick="invSort('salePrice')">Sale ($)</th>
+              <th onclick="invSort('qtyInStock')" class="nr">Qty in Stock</th>
+              <th class="col-reorder nr" onclick="invSort('reorderAt')">Reorder At</th>
+              <th class="no-sort nr">Order Qty ↺</th>
+              <th class="col-totalcost no-sort nr">Total Cost/Unit ↺</th>
+              <th class="no-sort nr">Profit/Unit ↺</th>
+              <th class="no-sort nr">Total Profit ↺</th>
+              <th class="no-sort">Status ↺</th>
+              <th class="no-sort"></th>
+            </tr></thead>
+            <tbody id="inv-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="empty" id="inv-empty" style="display:none">
+        <div class="empty-icon">📦</div>
+        <div class="empty-title" id="inv-empty-title">No products yet</div>
+        <div class="empty-sub" id="inv-empty-sub">Click "Add Product" to get started</div>
+      </div>
+    </div>
+
+    <!-- ── MOVEMENTS ── -->
+    <div class="page" id="page-movements">
+      <div class="page-head">
+        <div class="page-title">Stock In / Out</div>
+        <div class="page-sub">Track what arrives, sells, or gets adjusted. Linked products update automatically.</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="openMovementModal()">+ Log Movement</button>
+      </div>
+      <div class="toolbar">
+        <input class="search" type="text" placeholder="Search item, SKU, notes…" id="mov-search" oninput="renderMovements()">
+        <select class="fsel" id="mov-type" onchange="renderMovements()">
+          <option value="">All Types</option>
+        </select>
+        <select class="fsel" id="mov-status" onchange="renderMovements()">
+          <option value="">All Statuses</option>
+          <option>Complete</option><option>Delivered</option><option>Pending</option><option>In Transit</option>
+        </select>
+      </div>
+      <div class="tbl-card">
+        <div class="tbl-wrap">
+          <table><thead><tr>
+            <th class="no-sort">Date</th>
+            <th class="no-sort">SKU</th>
+            <th class="no-sort">Item</th>
+            <th class="no-sort">Type</th>
+            <th class="no-sort nr">Qty</th>
+            <th class="no-sort nr">Price</th>
+            <th class="no-sort">Status</th>
+            <th class="no-sort">Notes</th>
+            <th class="no-sort"></th>
+          </tr></thead>
+          <tbody id="mov-body"></tbody></table>
+        </div>
+      </div>
+      <div class="empty" id="mov-empty" style="display:none">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">No movements logged yet</div>
+        <div class="empty-sub">Track stock arrivals, sales, returns, and adjustments here</div>
+      </div>
+    </div>
+
+    <!-- ── PROFIT ── -->
+    <div class="page" id="page-profit">
+      <div class="page-head">
+        <div class="page-title">Profit Analysis</div>
+        <div class="page-sub">Based on current inventory on hand.</div>
+      </div>
+      <div class="profit-stats">
+        <div class="stat-card"><div class="stat-number blue" id="p-rev">—</div><div class="stat-label">Revenue on hand</div></div>
+        <div class="stat-card"><div class="stat-number" id="p-cost" style="color:var(--text-mid)">—</div><div class="stat-label">Cost on hand</div></div>
+        <div class="stat-card"><div class="stat-number green" id="p-profit">—</div><div class="stat-label">Total profit</div></div>
+        <div class="stat-card"><div class="stat-number amber" id="p-margin">—</div><div class="stat-label">Avg margin %</div></div>
+      </div>
+      <div class="sec-head">Profit by Product</div>
+      <div class="tbl-card">
+        <div class="tbl-wrap">
+          <table><thead><tr>
+            <th class="no-sort" id="th-profit-item">Product</th><th class="no-sort" id="th-profit-cat">Category</th>
+            <th class="no-sort nr">Base Cost</th><th class="no-sort nr">Total Cost/Unit</th><th class="no-sort nr">Sale Price</th>
+            <th class="no-sort nr">Profit/Unit</th><th class="no-sort nr">Qty</th>
+            <th class="no-sort nr">Total Profit</th><th class="no-sort nr">Margin</th>
+          </tr></thead>
+          <tbody id="profit-body"></tbody></table>
+        </div>
+      </div>
+      <div class="sec-head">Profit by Category</div>
+      <div class="tbl-card">
+        <div class="tbl-wrap">
+          <table><thead><tr>
+            <th class="no-sort" id="th-profcat-cat">Category</th><th class="no-sort nr" id="th-profcat-count">Products</th>
+            <th class="no-sort nr">Revenue</th><th class="no-sort nr">Cost</th>
+            <th class="no-sort nr">Profit</th><th class="no-sort nr">Margin</th>
+          </tr></thead>
+          <tbody id="profit-cat-body"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-wrap" id="modal-product">
+  <div class="modal">
+    <div class="modal-head"><span id="product-modal-title">Add Product</span><button class="icon-btn" onclick="closeModal('modal-product')" style="font-size:18px;color:var(--text-mid)">✕</button></div>
+    <div class="modal-body">
+      <div class="mode-toggle" id="cost-mode-toggle">
+        <button class="mode-btn active" id="btn-simple" onclick="setCostMode('simple')">Simple Mode</button>
+        <button class="mode-btn" id="btn-advanced" onclick="setCostMode('advanced')">Advanced Mode</button>
+      </div>
+      <div class="fg">
+        <div class="fi"><label id="lbl-sku">SKU / ID</label><input type="text" id="f-sku" placeholder="e.g. SKU-001"></div>
+        <div class="fi"><label id="lbl-cat">Category</label><input type="text" id="f-cat" placeholder="e.g. Bath & Body" list="cat-list"><datalist id="cat-list"></datalist></div>
+        <div class="fi full"><label id="lbl-name">Product Name *</label><input type="text" id="f-name" placeholder="e.g. Lemon Soap Bar"></div>
+        <div class="fi"><label id="lbl-sup">Supplier</label><input type="text" id="f-sup" placeholder="e.g. Clean Co" list="sup-list"><datalist id="sup-list"></datalist></div>
+        <div class="fi"><label id="lbl-loc">Storage Location</label><input type="text" id="f-loc" placeholder="e.g. Aisle 3, Bin B-12" list="loc-list"><datalist id="loc-list"></datalist></div>
+        <div class="fi"><label id="lbl-cost">Cost Price ($) *</label><input type="number" id="f-cost" placeholder="0.00" step="0.01" min="0" oninput="updateProductPreview()"></div>
+        <div class="fi"><label id="lbl-sale">Sale Price ($) *</label><input type="number" id="f-sale" placeholder="0.00" step="0.01" min="0" oninput="updateProductPreview()"></div>
+        <div class="fi"><label id="lbl-qty">Qty In Stock</label><input type="number" id="f-qty" placeholder="0" min="0"></div>
+        <div class="fi"><label id="lbl-reorder">Reorder At (qty)</label><input type="number" id="f-reorder" placeholder="10" min="0"></div>
+      </div>
+
+      <!-- ADVANCED COST FIELDS -->
+      <div class="adv-section" id="adv-cost-section" style="display:none">
+        <div class="adv-section-title">Advanced cost breakdown</div>
+        <div class="adv-fields">
+          <div class="fi"><label>Material Cost ($)</label><input type="number" id="f-material" placeholder="0.00" step="0.01" min="0" oninput="updateProductPreview()"></div>
+          <div class="fi"><label>Labor Cost ($)</label><input type="number" id="f-labor" placeholder="0.00" step="0.01" min="0" oninput="updateProductPreview()"></div>
+          <div class="fi"><label>Additional Fees ($)</label><input type="number" id="f-fees" placeholder="0.00" step="0.01" min="0" oninput="updateProductPreview()"></div>
+        </div>
+        <div class="cost-breakdown" id="adv-breakdown" style="display:none">
+          <div class="cost-breakdown-title">Live cost preview</div>
+          <div class="cost-line"><span class="cost-line-label">Base cost price</span><span class="cost-line-val" id="cb-base">$0.00</span></div>
+          <div class="cost-line"><span class="cost-line-label">Material cost</span><span class="cost-line-val" id="cb-material">$0.00</span></div>
+          <div class="cost-line"><span class="cost-line-label">Labor cost</span><span class="cost-line-val" id="cb-labor">$0.00</span></div>
+          <div class="cost-line"><span class="cost-line-label">Additional fees</span><span class="cost-line-val" id="cb-fees">$0.00</span></div>
+          <div class="cost-line total"><span class="cost-line-label">Total cost/unit</span><span class="cost-line-val" id="cb-total">$0.00</span></div>
+          <div class="cost-line total"><span class="cost-line-label">Profit/unit</span><span class="cost-line-val" id="cb-profit">$0.00</span></div>
+          <div class="cost-line total"><span class="cost-line-label">Margin</span><span class="cost-line-val" id="cb-margin">—</span></div>
+        </div>
+      </div>
+
+      <div class="info-pill" id="f-preview" style="display:none"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-product')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()"><span id="btn-save-item">Save Product</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- MOVEMENT MODAL -->
+<div class="modal-wrap" id="modal-movement">
+  <div class="modal">
+    <div class="modal-head"><span id="mov-modal-title">Log Movement</span><button class="icon-btn" onclick="closeModal('modal-movement')" style="font-size:18px;color:var(--text-mid)">✕</button></div>
+    <div class="modal-body">
+      <div class="fg">
+        <div class="fi"><label>Date</label><input type="date" id="m-date"></div>
+        <div class="fi"><label>Type</label>
+          <select id="m-type"></select>
+        </div>
+        <div class="fi full"><label id="lbl-mov-product">Product (optional)</label>
+          <select id="m-product" onchange="onMovProductChange()"><option value="">— Select or type SKU below —</option></select>
+        </div>
+        <div class="fi"><label>SKU</label><input type="text" id="m-sku" placeholder="Auto-filled or manual"></div>
+        <div class="fi"><label>Quantity *</label><input type="number" id="m-qty" placeholder="0" min="1"></div>
+        <div class="fi"><label>Price ($)</label><input type="number" id="m-price" placeholder="0.00" step="0.01" min="0"></div>
+        <div class="fi"><label>Status</label>
+          <select id="m-status"><option>Complete</option><option>Delivered</option><option>Pending</option><option>In Transit</option></select>
+        </div>
+        <div class="fi full"><label>Notes</label><input type="text" id="m-notes" placeholder="Optional"></div>
+      </div>
+      <div class="info-pill" id="m-hint">Select a product to see current stock.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-movement')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMovement()">Log Movement</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-wrap" id="modal-confirm">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-head"><span>Confirm Delete</span><button class="icon-btn" onclick="closeModal('modal-confirm')" style="font-size:18px;color:var(--text-mid)">✕</button></div>
+    <div class="modal-body"><p id="confirm-msg"></p></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">Cancel</button>
+      <button class="btn btn-danger" id="confirm-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// ─── NICHE CONFIG ──────────────────────────────────────────────────────────
+// To create an Etsy, TikTok Shop, or custom version, copy this block and
+// swap values below. Nothing else in the file needs to change.
+// ═══════════════════════════════════════════════════════════════════════════
+const NICHE = 'general'; // 'general' | 'etsy' | 'tiktok'
+
+const NICHES = {
+  general: {
+    appName:          'Inventory Control',
+    appTagline:       'Stock · Profit · Restock — all in one place',
+    brandSub:         'Your Business',
+    footerLine:       'Track stock, profit, and restock needs — all in one place',
+
+    // Core entity labels
+    item:             'Product',      // singular
+    items:            'Products',     // plural
+    itemId:           'SKU / ID',
+    itemIdPlaceholder:'e.g. SKU-001',
+    itemName:         'Product Name',
+    itemNamePlaceholder: 'e.g. Lemon Soap Bar',
+    category:         'Category',
+    categoryPlaceholder: 'e.g. Bath & Body',
+    supplier:         'Supplier',
+    supplierPlaceholder: 'e.g. Clean Co',
+    storageLocation:  'Storage Location',
+    storageLocationPlaceholder: 'e.g. Aisle 3, Bin B-12',
+    costPrice:        'Cost Price ($)',
+    salePrice:        'Sale Price ($)',
+    qtyInStock:       'Qty In Stock',
+    reorderAt:        'Reorder At (qty)',
+
+    // Dashboard labels
+    inventoryValue:   'Total Inventory Value',
+    profitPotential:  'Profit Potential',
+    belowReorder:     'Below Reorder Level',
+    topItem:          'Top Profitable Product',
+    lowMarginItem:    'Lowest Margin Product',
+    restockNeeded:    'Restock Needed',
+    profitByItem:     'Profit by Product',
+
+    // Movement types
+    movementTypes:    ['Stock In', 'Sale', 'Adjustment', 'Return'],
+
+    // Sample data (generic)
+    sampleItems: [
+      {sku:'ELEC-001',name:'Wireless Mouse',category:'Electronics',supplier:'TechSupply Co.',storageLocation:'Aisle 2, Shelf A',costPrice:12.50,salePrice:29.99,qtyInStock:42,reorderAt:10,materialCost:0,laborCost:0,additionalFees:0},
+      {sku:'ELEC-002',name:'USB-C Hub (7-Port)',category:'Electronics',supplier:'TechSupply Co.',storageLocation:'Aisle 2, Shelf B',costPrice:18.00,salePrice:49.99,qtyInStock:14,reorderAt:12,materialCost:0,laborCost:0,additionalFees:0},
+      {sku:'PACK-002',name:'Kraft Paper Bags',category:'Packaging',supplier:'EcoPack Ltd.',storageLocation:'Warehouse B, Bin 4',costPrice:0.35,salePrice:1.20,qtyInStock:55,reorderAt:30,materialCost:0,laborCost:0,additionalFees:0},
+      {sku:'PACK-003',name:'Bubble Mailers (100pk)',category:'Packaging',supplier:'EcoPack Ltd.',storageLocation:'Warehouse B, Bin 7',costPrice:14.00,salePrice:28.00,qtyInStock:9,reorderAt:10,materialCost:0,laborCost:0,additionalFees:0},
+      {sku:'CONS-003',name:'Coffee Beans 1kg',category:'Consumables',supplier:'BeanHouse Roasters',storageLocation:'Cold Storage, Row 1',costPrice:8.00,salePrice:22.00,qtyInStock:3,reorderAt:15,materialCost:1.50,laborCost:0.80,additionalFees:0.25},
+      {sku:'CONS-004',name:'Oat Milk Cartons',category:'Consumables',supplier:'GreenLeaf Foods',storageLocation:'Cold Storage, Row 2',costPrice:1.80,salePrice:4.50,qtyInStock:0,reorderAt:20,materialCost:0,laborCost:0,additionalFees:0},
+      {sku:'APP-005',name:'Branded Tote Bag',category:'Apparel',supplier:'PrintWorks Studio',storageLocation:'Shelf C, Unit 3',costPrice:4.20,salePrice:18.00,qtyInStock:30,reorderAt:15,materialCost:1.00,laborCost:2.50,additionalFees:0.50},
+      {sku:'APP-006',name:'Enamel Pin Set',category:'Apparel',supplier:'PrintWorks Studio',storageLocation:'Shelf C, Unit 4',costPrice:2.10,salePrice:12.00,qtyInStock:7,reorderAt:8,materialCost:0,laborCost:0,additionalFees:0},
+    ],
+  },
+
+  // ── ETSY VERSION ────────────────────────────────────────────────────────
+  etsy: {
+    appName:          'Shop Tracker',
+    appTagline:       'Listings · Profit · Restock — built for Etsy sellers',
+    brandSub:         'Etsy Shop',
+    footerLine:       'Track your listings, profit, and restock needs',
+
+    item:             'Listing',
+    items:            'Listings',
+    itemId:           'Listing ID',
+    itemIdPlaceholder:'e.g. 1234567890',
+    itemName:         'Listing Name',
+    itemNamePlaceholder: 'e.g. Hand-Poured Soy Candle',
+    category:         'Section',
+    categoryPlaceholder: 'e.g. Candles & Home',
+    supplier:         'Material Source',
+    supplierPlaceholder: 'e.g. CandleScience',
+    storageLocation:  'Storage Spot',
+    storageLocationPlaceholder: 'e.g. Studio Shelf 2',
+    costPrice:        'Material Cost ($)',
+    salePrice:        'Listing Price ($)',
+    qtyInStock:       'Qty Available',
+    reorderAt:        'Restock At (qty)',
+
+    inventoryValue:   'Total Stock Value',
+    profitPotential:  'Potential Revenue',
+    belowReorder:     'Low Stock Listings',
+    topItem:          'Top Performing Listing',
+    lowMarginItem:    'Lowest Margin Listing',
+    restockNeeded:    'Listings to Restock',
+    profitByItem:     'Profit by Listing',
+
+    movementTypes:    ['Stock In', 'Etsy Sale', 'Adjustment', 'Return / Refund'],
+
+    sampleItems: [
+      {sku:'LIS-001',name:'Hand-Poured Soy Candle — Lavender',category:'Candles',supplier:'CandleScience',storageLocation:'Studio Shelf 1',costPrice:3.50,salePrice:18.00,qtyInStock:24,reorderAt:8,materialCost:1.20,laborCost:2.00,additionalFees:1.80},
+      {sku:'LIS-002',name:'Macramé Wall Hanging — Small',category:'Home Decor',supplier:'Boho Supplies',storageLocation:'Studio Shelf 2',costPrice:4.00,salePrice:32.00,qtyInStock:6,reorderAt:5,materialCost:2.50,laborCost:8.00,additionalFees:3.20},
+      {sku:'LIS-003',name:'Pressed Flower Bookmark Set (4)',category:'Stationery',supplier:'Local Flowers',storageLocation:'Box A',costPrice:0.80,salePrice:9.00,qtyInStock:40,reorderAt:15,materialCost:0.50,laborCost:1.50,additionalFees:0.90},
+      {sku:'LIS-004',name:'Custom Pet Portrait — Digital',category:'Digital Downloads',supplier:'—',storageLocation:'Digital',costPrice:0,salePrice:25.00,qtyInStock:999,reorderAt:0,materialCost:0,laborCost:12.00,additionalFees:2.50},
+      {sku:'LIS-005',name:'Resin Coaster Set (4)',category:'Home Decor',supplier:'Resin World',storageLocation:'Studio Shelf 3',costPrice:5.00,salePrice:38.00,qtyInStock:3,reorderAt:4,materialCost:3.00,laborCost:10.00,additionalFees:3.80},
+    ],
+  },
+
+  // ── TIKTOK SHOP VERSION ─────────────────────────────────────────────────
+  tiktok: {
+    appName:          'TikTok Shop Tracker',
+    appTagline:       'Products · Sales · Restock — for TikTok creators',
+    brandSub:         'TikTok Shop',
+    footerLine:       'Manage your TikTok Shop inventory and profit',
+
+    item:             'Product',
+    items:            'Products',
+    itemId:           'Product ID / SKU',
+    itemIdPlaceholder:'e.g. TTS-0001',
+    itemName:         'Product Title',
+    itemNamePlaceholder: 'e.g. Glow Serum 30ml',
+    category:         'Category / Niche',
+    categoryPlaceholder: 'e.g. Skincare',
+    supplier:         'Supplier / Source',
+    supplierPlaceholder: 'e.g. Alibaba / Local',
+    storageLocation:  'Storage Location',
+    storageLocationPlaceholder: 'e.g. Box 3, Shelf B',
+    costPrice:        'Unit Cost ($)',
+    salePrice:        'TikTok Price ($)',
+    qtyInStock:       'Qty In Stock',
+    reorderAt:        'Reorder At (qty)',
+
+    inventoryValue:   'Total Stock Value',
+    profitPotential:  'Revenue Potential',
+    belowReorder:     'Low Stock Products',
+    topItem:          'Top Earner',
+    lowMarginItem:    'Lowest Margin Product',
+    restockNeeded:    'Needs Restocking',
+    profitByItem:     'Profit by Product',
+
+    movementTypes:    ['Stock In', 'TikTok Sale', 'Adjustment', 'Return'],
+
+    sampleItems: [
+      {sku:'TTS-001',name:'Glow Serum 30ml',category:'Skincare',supplier:'GlowLab Inc.',storageLocation:'Box 1, Shelf A',costPrice:4.50,salePrice:24.99,qtyInStock:80,reorderAt:20,materialCost:0,laborCost:0,additionalFees:2.50},
+      {sku:'TTS-002',name:'LED Face Mask',category:'Beauty Tools',supplier:'AliSource',storageLocation:'Box 2, Shelf A',costPrice:12.00,salePrice:49.99,qtyInStock:15,reorderAt:10,materialCost:0,laborCost:0,additionalFees:5.00},
+      {sku:'TTS-003',name:'Viral Stanley Dupe Tumbler',category:'Drinkware',supplier:'DrinkWell Co.',storageLocation:'Shelf B, Row 2',costPrice:6.00,salePrice:22.00,qtyInStock:5,reorderAt:12,materialCost:0,laborCost:0,additionalFees:2.20},
+      {sku:'TTS-004',name:'Mini Perfume Set (3pc)',category:'Fragrance',supplier:'ScentCo',storageLocation:'Box 3',costPrice:8.00,salePrice:34.00,qtyInStock:0,reorderAt:10,materialCost:0,laborCost:0,additionalFees:3.40},
+      {sku:'TTS-005',name:'Resistance Band Kit',category:'Fitness',supplier:'FitGear Ltd.',storageLocation:'Shelf C',costPrice:5.00,salePrice:19.99,qtyInStock:34,reorderAt:15,materialCost:0,laborCost:0,additionalFees:2.00},
+    ],
+  },
+};
+
+// Active config — all UI reads from this
+const C = NICHES[NICHE] || NICHES.general;
+
+// ─── Apply config labels to DOM ────────────────────────────────────────────
+function applyConfig(){
+  // Page / app identity
+  document.title = C.appName + ' Dashboard';
+  setText('sb-app-name',    C.appName);
+  setText('sb-brand-sub',   C.brandSub);
+  setText('ob-app-title',   C.appName + ' Dashboard');
+  setText('ob-app-tag',     C.appTagline);
+  setText('sb-footer-line', C.footerLine);
+
+  // Sidebar nav
+  setText('sb-add-item',    'Add ' + C.item);
+  setText('sb-items-label', C.items);
+
+  // Inventory page
+  setText('inv-page-title', C.items);
+  setText('btn-add-item',   'Add ' + C.item);
+  setText('inv-empty-title','No ' + C.items.toLowerCase() + ' yet');
+  setText('inv-empty-sub',  'Click "Add ' + C.item + '" to get started');
+
+  // Inventory table headers
+  setText('th-item-name',   C.itemName);
+  setText('th-category',    C.category);
+  setText('th-supplier',    C.supplier);
+  setText('th-location',    C.storageLocation);
+
+  // Column visibility chips
+  setText('chip-supplier',  C.supplier);
+  setText('chip-location',  C.storageLocation);
+  setText('chip-costprice', C.costPrice.replace(' ($)',''));
+  setText('chip-saleprice', C.salePrice.replace(' ($)',''));
+  setText('chip-reorder',   C.reorderAt.replace(' (qty)',''));
+
+  // Product modal form labels
+  setText('lbl-sku',     C.itemId + ' *');
+  setText('lbl-cat',     C.category);
+  setText('lbl-name',    C.itemName + ' *');
+  setText('lbl-sup',     C.supplier);
+  setText('lbl-loc',     C.storageLocation);
+  setText('lbl-cost',    C.costPrice + ' *');
+  setText('lbl-sale',    C.salePrice + ' *');
+  setText('lbl-qty',     C.qtyInStock);
+  setText('lbl-reorder', C.reorderAt);
+  setText('btn-save-item','Save ' + C.item);
+  setAttr('f-sku',  'placeholder', C.itemIdPlaceholder);
+  setAttr('f-name', 'placeholder', C.itemNamePlaceholder);
+  setAttr('f-cat',  'placeholder', C.categoryPlaceholder);
+  setAttr('f-sup',  'placeholder', C.supplierPlaceholder);
+  setAttr('f-loc',  'placeholder', C.storageLocationPlaceholder);
+
+  // Movement modal
+  setText('lbl-mov-product', C.item + ' (optional)');
+  const mType = document.getElementById('m-type');
+  if(mType) mType.innerHTML = C.movementTypes.map(t=>`<option>${t}</option>`).join('');
+
+  // Movement filter dropdown (All Types)
+  const movTypeFilter = document.getElementById('mov-type');
+  if(movTypeFilter){
+    movTypeFilter.innerHTML = `<option value="">All Types</option>` +
+      C.movementTypes.map(t=>`<option>${t}</option>`).join('');
+  }
+
+  // Dashboard summary labels
+  setText('lbl-inv-value',   C.inventoryValue);
+  setText('lbl-profit-pot',  C.profitPotential);
+  setText('lbl-below-reorder', C.belowReorder);
+  setText('lbl-top-item',    C.topItem);
+  setText('lbl-low-margin',  C.lowMarginItem);
+  setText('lbl-profit-chart',C.profitByItem);
+  setText('lbl-restock-card',C.restockNeeded);
+
+  // Profit page headers
+  setText('th-profit-item',  C.item);
+  setText('th-profit-cat',   C.category);
+  setText('th-profcat-cat',  C.category);
+  setText('th-profcat-count',C.items);
+
+  // Mobile bottom nav Products tab
+  const mobNavBtns = document.querySelectorAll('.mob-nav-btn[data-navpage="inventory"] span:last-child');
+  mobNavBtns.forEach(el => el.textContent = C.items);
+
+  // FAB aria-label
+  const fab = document.getElementById('fab');
+  if(fab){ fab.setAttribute('aria-label','Add '+C.item); fab.setAttribute('title','Add '+C.item); }
+
+  // Search placeholder
+  setAttr('inv-search','placeholder','Search '+C.items.toLowerCase()+', SKU, '+C.supplier.toLowerCase()+'…');
+}
+function setText(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+function setAttr(id, attr, val){ const el=document.getElementById(id); if(el) el.setAttribute(attr,val); }
+
+// ─── Storage ───────────────────────────────────────────────────────────────
+const PK='inv_products', MK='inv_movements';
+const loadP=()=>JSON.parse(localStorage.getItem(PK)||'[]');
+const loadM=()=>JSON.parse(localStorage.getItem(MK)||'[]');
+const saveP=v=>localStorage.setItem(PK,JSON.stringify(v));
+const saveM=v=>localStorage.setItem(MK,JSON.stringify(v));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+// ─── Calc ──────────────────────────────────────────────────────────────────
+function status(qty,ro){
+  if(qty===0) return 'Out of Stock';
+  if(qty<=ro) return 'Reorder Now';
+  if(qty<=ro*1.2) return 'Reorder Soon';
+  return 'Healthy';
+}
+function statusKey(s){return{'Healthy':'healthy','Reorder Soon':'soon','Reorder Now':'now','Out of Stock':'oos'}[s]||'healthy';}
+function enrich(p){
+  const qty=+p.qtyInStock||0,cost=+p.costPrice||0,sale=+p.salePrice||0,ro=+p.reorderAt||0;
+  const material=+p.materialCost||0,labor=+p.laborCost||0,fees=+p.additionalFees||0;
+  const totalCost=cost+material+labor+fees;
+  const profitUnit=sale-totalCost;
+  const st=status(qty,ro);
+  return{...p,qty,cost,sale,ro,material,labor,fees,totalCost,
+    costBasis:totalCost*qty,
+    profitUnit,
+    totalProfit:profitUnit*qty,
+    margin:sale>0?profitUnit/sale:0,
+    status:st,
+    statusKey:statusKey(st),
+    orderQty:Math.max(0,ro-qty),
+    isAdvanced:material>0||labor>0||fees>0
+  };
+}
+const $f=n=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pct=n=>(n*100).toFixed(1)+'%';
+const num=n=>Number(n).toLocaleString('en-US');
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const dateStr=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+
+function badgeCls(s){return{'Healthy':'bs-healthy','Reorder Soon':'bs-soon','Reorder Now':'bs-now','Out of Stock':'bs-oos','Complete':'bg','Delivered':'bg','Pending':'ba','In Transit':'bb'}[s]||'bx';}
+function rowCls(s){return{'Healthy':'status-healthy','Reorder Soon':'status-reorder-soon','Reorder Now':'status-reorder-now','Out of Stock':'status-out-of-stock'}[s]||'';}
+
+// ─── Mobile sidebar ────────────────────────────────────────────────────────
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('mob-overlay').classList.add('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('mob-overlay').classList.remove('open');}
+
+// ─── Page switching ────────────────────────────────────────────────────────
+function switchPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item[data-page]').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.mob-nav-btn[data-navpage]').forEach(b=>b.classList.toggle('active',b.dataset.navpage===name));
+  document.getElementById('page-'+name).classList.add('active');
+  const si=document.querySelector('.sb-item[data-page="'+name+'"]');
+  if(si) si.classList.add('active');
+  // Update mobile top bar page label
+  const labels={dashboard:'Dashboard',inventory:C.items,movements:'Stock In/Out',profit:'Profit Analysis'};
+  const mb=document.querySelector('.mob-brand');
+  if(mb) mb.innerHTML=`📋 ${labels[name]||C.appName}`;
+  // FAB: show on dashboard & inventory, hide on others
+  const fab=document.getElementById('fab');
+  if(fab) fab.style.display=(name==='dashboard'||name==='inventory')?'flex':'none';
+  closeSidebar();
+  window.scrollTo({top:0,behavior:'smooth'});
+  const renders={dashboard:renderDashboard,inventory:renderInventory,movements:renderMovements,profit:renderProfit};
+  if(renders[name]) renders[name]();
+}
+
+// ─── Onboarding ────────────────────────────────────────────────────────────
+function dismissOB(){document.getElementById('ob').style.display='none';localStorage.setItem('inv_ob','1');}
+function previewOnboarding(){document.getElementById('ob').style.display='flex';}
+
+// Sample products come from the active niche config
+const SAMPLE_PRODUCTS = C.sampleItems.map(p=>({...p,id:uid(),createdAt:new Date().toISOString()}));
+
+function loadSampleData(){
+  if(loadP().length>0){
+    if(!window.confirm('Replace current inventory with sample data?\n\nThis will overwrite everything.')) return;
+  }
+  saveP(SAMPLE_PRODUCTS.map(p=>({...p,id:uid()})));
+  saveM([]);
+  localStorage.removeItem('inv_ob');
+  document.getElementById('ob-hint').style.display='flex';
+  renderDashboard();
+  if(document.getElementById('page-inventory').classList.contains('active')) renderInventory();
+  if(document.getElementById('page-movements').classList.contains('active')) renderMovements();
+  if(document.getElementById('page-profit').classList.contains('active')) renderProfit();
+  showToast('📦','Sample '+C.items.toLowerCase()+' loaded — explore away!');
+}
+
+function clearData(){
+  if(!window.confirm('Clear all inventory data?\n\nThis cannot be undone. Consider saving a backup first.')) return;
+  saveP([]);saveM([]);
+  localStorage.removeItem('inv_ob');
+  document.getElementById('ob-hint').style.display='none';
+  renderDashboard();
+  if(document.getElementById('page-inventory').classList.contains('active')) renderInventory();
+  if(document.getElementById('page-movements').classList.contains('active')) renderMovements();
+  if(document.getElementById('page-profit').classList.contains('active')) renderProfit();
+  showToast('🗑','All data cleared');
+}
+
+
+// ─── Modals ────────────────────────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+document.querySelectorAll('.modal-wrap').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)closeModal(el.id);}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-wrap.open').forEach(el=>closeModal(el.id));});
+let _cb=null;
+function confirm2(msg,cb){document.getElementById('confirm-msg').textContent=msg;_cb=cb;openModal('modal-confirm');}
+document.getElementById('confirm-btn').onclick=()=>{closeModal('modal-confirm');if(_cb)_cb();};
+
+// ─── Inventory sort ────────────────────────────────────────────────────────
+let iSortCol='name',iSortDir=1;
+function invSort(col){if(iSortCol===col)iSortDir*=-1;else{iSortCol=col;iSortDir=1;}renderInventory();}
+
+// ─── Cost mode toggle ──────────────────────────────────────────────────────
+let _costMode='simple';
+function setCostMode(mode){
+  _costMode=mode;
+  document.getElementById('btn-simple').classList.toggle('active',mode==='simple');
+  document.getElementById('btn-advanced').classList.toggle('active',mode==='advanced');
+  document.getElementById('adv-cost-section').style.display=mode==='advanced'?'block':'none';
+  updateProductPreview();
+}
+
+// ─── Product modal ─────────────────────────────────────────────────────────
+let editPid=null;
+function openProductModal(id){
+  editPid=id||null;
+  const products=loadP(),p=id?products.find(x=>x.id===id):null;
+  const hasAdv=p&&(+p.materialCost>0||+p.laborCost>0||+p.additionalFees>0);
+  document.getElementById('product-modal-title').textContent=id?'Edit '+C.item:'Add '+C.item;
+  document.getElementById('f-sku').value   =p?p.sku:'';
+  document.getElementById('f-name').value  =p?p.name:'';
+  document.getElementById('f-cat').value   =p?p.category:'';
+  document.getElementById('f-sup').value   =p?p.supplier:'';
+  document.getElementById('f-loc').value   =p?(p.storageLocation||''):'';
+  document.getElementById('f-cost').value  =p?p.costPrice:'';
+  document.getElementById('f-sale').value  =p?p.salePrice:'';
+  document.getElementById('f-qty').value   =p?p.qtyInStock:'';
+  document.getElementById('f-reorder').value=p?p.reorderAt:'';
+  document.getElementById('f-material').value=p?p.materialCost||'':'';
+  document.getElementById('f-labor').value  =p?p.laborCost||'':'';
+  document.getElementById('f-fees').value   =p?p.additionalFees||'':'';
+  document.getElementById('f-preview').style.display='none';
+  const cats=[...new Set(products.map(x=>x.category).filter(Boolean))];
+  document.getElementById('cat-list').innerHTML=cats.map(c=>`<option value="${esc(c)}">`).join('');
+  const sups=[...new Set(products.map(x=>x.supplier).filter(Boolean))];
+  document.getElementById('sup-list').innerHTML=sups.map(s=>`<option value="${esc(s)}">`).join('');
+  const locs=[...new Set(products.map(x=>x.storageLocation).filter(Boolean))];
+  document.getElementById('loc-list').innerHTML=locs.map(l=>`<option value="${esc(l)}">`).join('');
+  setCostMode(hasAdv?'advanced':'simple');
+  updateProductPreview();
+  openModal('modal-product');
+  setTimeout(()=>document.getElementById('f-name').focus(),50);
+}
+function updateProductPreview(){
+  const cost=parseFloat(document.getElementById('f-cost').value)||0;
+  const sale=parseFloat(document.getElementById('f-sale').value)||0;
+  const material=parseFloat(document.getElementById('f-material').value)||0;
+  const labor=parseFloat(document.getElementById('f-labor').value)||0;
+  const fees=parseFloat(document.getElementById('f-fees').value)||0;
+  const totalCost=cost+material+labor+fees;
+  const pu=sale-totalCost;
+  const m=sale>0?pu/sale:0;
+
+  if(_costMode==='advanced'){
+    const anyVal=cost>0||sale>0||material>0||labor>0||fees>0;
+    const bd=document.getElementById('adv-breakdown');
+    bd.style.display=anyVal?'block':'none';
+    if(anyVal){
+      document.getElementById('cb-base').textContent=$f(cost);
+      document.getElementById('cb-material').textContent=$f(material);
+      document.getElementById('cb-labor').textContent=$f(labor);
+      document.getElementById('cb-fees').textContent=$f(fees);
+      document.getElementById('cb-total').textContent=$f(totalCost);
+      const profEl=document.getElementById('cb-profit');
+      profEl.textContent=$f(pu)+(pu<0?' ⚠':'');
+      profEl.className='cost-line-val '+(pu>=0?'profit-good':'profit-bad');
+      document.getElementById('cb-margin').textContent=sale>0?pct(m):'—';
+    }
+    document.getElementById('f-preview').style.display='none';
+  } else {
+    const prev=document.getElementById('f-preview');
+    if(cost>0&&sale>0){
+      prev.style.display='block';
+      prev.textContent=`Profit/unit: ${$f(pu)}  •  Margin: ${pct(m)}${pu<0?' ⚠ Cost exceeds sale price':''}`;
+      prev.style.color=pu<0?'var(--red-text)':'var(--amber-text)';
+    } else prev.style.display='none';
+    document.getElementById('adv-breakdown').style.display='none';
+  }
+}
+function saveProduct(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){alert(C.itemName+' is required.');return;}
+  const p={
+    id:editPid||uid(),sku:document.getElementById('f-sku').value.trim(),name,
+    category:document.getElementById('f-cat').value.trim(),supplier:document.getElementById('f-sup').value.trim(),
+    storageLocation:document.getElementById('f-loc').value.trim(),
+    costPrice:parseFloat(document.getElementById('f-cost').value)||0,
+    salePrice:parseFloat(document.getElementById('f-sale').value)||0,
+    qtyInStock:parseInt(document.getElementById('f-qty').value)||0,
+    reorderAt:parseInt(document.getElementById('f-reorder').value)||0,
+    materialCost:parseFloat(document.getElementById('f-material').value)||0,
+    laborCost:parseFloat(document.getElementById('f-labor').value)||0,
+    additionalFees:parseFloat(document.getElementById('f-fees').value)||0,
+    createdAt:editPid?undefined:new Date().toISOString(),
+  };
+  const products=loadP();
+  if(editPid){const i=products.findIndex(x=>x.id===editPid);if(i>=0){p.createdAt=products[i].createdAt;products[i]=p;}}
+  else products.push(p);
+  saveP(products);closeModal('modal-product');
+  renderInventory();renderDashboard();
+}
+function deleteProduct(id){
+  confirm2('Delete this '+C.item.toLowerCase()+'? This cannot be undone.',()=>{saveP(loadP().filter(p=>p.id!==id));renderInventory();renderDashboard();});
+}
+
+// ─── Movement modal ────────────────────────────────────────────────────────
+let editMid=null;
+function openMovementModal(id){
+  editMid=id||null;
+  const movements=loadM(),m=id?movements.find(x=>x.id===id):null;
+  document.getElementById('mov-modal-title').textContent=id?'Edit Movement':'Log Movement';
+  document.getElementById('m-date').value  =m?m.date:new Date().toISOString().slice(0,10);
+  document.getElementById('m-type').value  =m?m.type:C.movementTypes[0];
+  document.getElementById('m-sku').value   =m?m.sku:'';
+  document.getElementById('m-qty').value   =m?m.qty:'';
+  document.getElementById('m-price').value =m?m.price:'';
+  document.getElementById('m-status').value=m?m.status:'Complete';
+  document.getElementById('m-notes').value =m?m.notes:'';
+  const products=loadP();
+  const sel=document.getElementById('m-product');
+  sel.innerHTML='<option value="">— Select or type SKU below —</option>'+
+    products.map(p=>`<option value="${p.id}"${m&&m.productId===p.id?' selected':''}>${esc(p.name)}${p.sku?' ('+esc(p.sku)+')':''}</option>`).join('');
+  updateMovHint();openModal('modal-movement');
+}
+function onMovProductChange(){
+  const id=document.getElementById('m-product').value;
+  const p=loadP().find(x=>x.id===id);
+  if(p){
+    document.getElementById('m-sku').value=p.sku||'';
+    const t=document.getElementById('m-type').value;
+    // 2nd type = "sale" equivalent; 1st type = "stock in" equivalent
+    if(t===C.movementTypes[1]) document.getElementById('m-price').value=p.salePrice||'';
+    if(t===C.movementTypes[0]) document.getElementById('m-price').value=p.costPrice||'';
+  }
+  updateMovHint();
+}
+function updateMovHint(){
+  const id=document.getElementById('m-product').value;
+  const p=id?enrich(loadP().find(x=>x.id===id)||{}):null;
+  document.getElementById('m-hint').textContent=p&&p.name
+    ?`Stock: ${num(p.qty)}  •  Cost: ${$f(p.cost)}  •  Sale: ${$f(p.sale)}  •  ${p.status}`
+    :'Select a '+C.item.toLowerCase()+' to see current stock level.';
+}
+function saveMovement(){
+  const qty=parseInt(document.getElementById('m-qty').value)||0;
+  if(qty<=0){alert('Quantity must be greater than 0.');return;}
+  const productId=document.getElementById('m-product').value;
+  const type=document.getElementById('m-type').value;
+  const mstatus=document.getElementById('m-status').value;
+  const products=loadP();
+  const prod=productId?products.find(x=>x.id===productId):null;
+  const m={
+    id:editMid||uid(),date:document.getElementById('m-date').value,productId,
+    sku:document.getElementById('m-sku').value.trim(),
+    itemName:prod?prod.name:document.getElementById('m-sku').value.trim()||'Unknown',
+    type,qty,price:parseFloat(document.getElementById('m-price').value)||0,
+    status:mstatus,notes:document.getElementById('m-notes').value.trim(),
+  };
+  if(productId&&!editMid&&(mstatus==='Complete'||mstatus==='Delivered')){
+    const i=products.findIndex(x=>x.id===productId);
+    if(i>=0){
+      // Treat first movement type as "incoming", everything else as "outgoing"
+      // Also match 'Return' / 'Return / Refund' patterns as incoming
+      const isIn = type===C.movementTypes[0] || /return/i.test(type);
+      const delta = isIn ? qty : -qty;
+      products[i].qtyInStock=Math.max(0,(+products[i].qtyInStock||0)+delta);
+      saveP(products);
+    }
+  }
+  const movements=loadM();
+  if(editMid){const i=movements.findIndex(x=>x.id===editMid);if(i>=0)movements[i]=m;}
+  else movements.unshift(m);
+  saveM(movements);closeModal('modal-movement');
+  renderMovements();renderDashboard();renderInventory();
+}
+function deleteMovement(id){confirm2('Delete this movement record?',()=>{saveM(loadM().filter(m=>m.id!==id));renderMovements();});}
+
+// ─── Dashboard ─────────────────────────────────────────────────────────────
+function renderDashboard(){
+  const products=loadP().map(enrich);
+  const restock=products.filter(p=>p.status==='Reorder Soon'||p.status==='Reorder Now'||p.status==='Out of Stock');
+  const oos=products.filter(p=>p.status==='Out of Stock');
+  const needNow=products.filter(p=>p.status==='Reorder Now'||p.status==='Out of Stock');
+  const cap=products.reduce((s,p)=>s+p.costBasis,0);
+  const rev=products.reduce((s,p)=>s+p.sale*p.qty,0);
+  const prof=products.reduce((s,p)=>s+p.totalProfit,0);
+  const lowMoving=restock.reduce((s,p)=>s+p.costBasis,0);
+
+  // Greeting
+  const h=new Date().getHours();
+  const word=h<12?'morning.':h<17?'afternoon.':h<21?'evening.':'night.';
+  document.getElementById('greeting-word').textContent=word;
+
+  // Today's Snapshot
+  const snap=document.getElementById('snapshot-panel');
+  const snapLines=[];
+  if(products.length===0){
+    snap.className='snapshot-panel good';
+    snap.innerHTML=`<div class="snapshot-title">Today's Snapshot</div><div class="snapshot-line"><span class="snap-icon">👋</span>Add your first ${C.item.toLowerCase()} to get started.</div>`;
+  } else {
+    const urgency=needNow.length>0?'alert':restock.length>0?'warn':'good';
+    snap.className=`snapshot-panel ${urgency}`;
+    if(needNow.length>0)
+      snapLines.push(`<div class="snapshot-line"><span class="snap-icon">🚨</span><span><strong>${needNow.length} item${needNow.length>1?'s':''}</strong> need restocking right now</span></div>`);
+    else if(restock.length>0)
+      snapLines.push(`<div class="snapshot-line"><span class="snap-icon">⚠️</span><span><strong>${restock.length} item${restock.length>1?'s':''}</strong> approaching their reorder point</span></div>`);
+    else
+      snapLines.push(`<div class="snapshot-line"><span class="snap-icon">✅</span><span>All ${C.items.toLowerCase()} are <strong>well stocked</strong> — nothing to reorder</span></div>`);
+    if(lowMoving>0)
+      snapLines.push(`<div class="snapshot-line"><span class="snap-icon">💤</span><span><strong>${$f(lowMoving)}</strong> tied up in low or out-of-stock inventory</span></div>`);
+    snapLines.push(`<div class="snapshot-line"><span class="snap-icon">📦</span><span>You're tracking <strong>${products.length} ${products.length>1?C.items.toLowerCase():C.item.toLowerCase()}</strong> with <strong>${$f(rev)}</strong> in potential revenue</span></div>`);
+    snap.innerHTML=`<div class="snapshot-title">Today's Snapshot</div>`+snapLines.join('');
+  }
+
+  // Summary cards
+  const fmt=n=>n>=1000?'$'+Math.round(n).toLocaleString():$f(n);
+  document.getElementById('s-inv-value').textContent=fmt(cap);
+  document.getElementById('s-profit-pot').textContent=fmt(prof);
+  document.getElementById('s-below-reorder').textContent=restock.length||'None';
+
+  const byProfit=[...products].filter(p=>p.sale>0).sort((a,b)=>b.totalProfit-a.totalProfit);
+  const topP=byProfit[0];
+  const topEl=document.getElementById('s-top-product');
+  const topSub=document.getElementById('s-top-product-sub');
+  if(topP){topEl.textContent=topP.name;topSub.textContent=`${$f(topP.totalProfit)} total profit · ${pct(topP.margin)} margin`;}
+  else{topEl.textContent='—';topSub.textContent='Add products with sale prices';}
+
+  const byMargin=[...products].filter(p=>p.sale>0).sort((a,b)=>a.margin-b.margin);
+  const lowP=byMargin[0];
+  const lowEl=document.getElementById('s-low-margin');
+  const lowSub=document.getElementById('s-low-margin-sub');
+  if(lowP){
+    lowEl.textContent=lowP.name;
+    lowEl.style.color=lowP.margin<0?'var(--red-text)':'var(--text)';
+    lowSub.textContent=`${pct(lowP.margin)} margin · ${$f(lowP.profitUnit)}/unit`;
+  } else{lowEl.textContent='—';lowSub.textContent='No '+C.items.toLowerCase()+' with sale prices yet';}
+
+  // Restock list
+  const list=document.getElementById('dash-restock-list');
+  if(!restock.length){
+    list.innerHTML=`<div style="text-align:center;padding:24px 0;color:var(--text-mid);font-size:13px">✅ All ${C.items.toLowerCase()} are sufficiently stocked</div>`;
+  } else {
+    const avatarColors=['#5B99D9','#7CB342','#E8B366','#D17C7C','#9B59B6','#E67E22','#1ABC9C'];
+    list.innerHTML=restock.slice(0,5).map((p,i)=>`
+      <div class="person-row" onclick="switchPage('inventory')">
+        <div class="person-avatar" style="background:${avatarColors[i%avatarColors.length]}">${p.name.charAt(0).toUpperCase()}</div>
+        <div class="person-info">
+          <div class="person-name">${esc(p.name)}</div>
+          <div class="person-meta">${esc(p.category||C.item)} · ${p.qty} in stock · Reorder at ${p.ro}${p.orderQty>0?` · <strong>Order +${p.orderQty}</strong>`:''}</div>
+          <span class="person-tag badge ${badgeCls(p.status)}">${p.status}</span>
+        </div>
+        <div class="person-arrow">›</div>
+      </div>`).join('');
+    if(restock.length>5) list.innerHTML+=`<div style="text-align:center;padding:10px 0;font-size:12px;color:var(--text-mid)">+${restock.length-5} more — <span style="color:var(--chart-blue);cursor:pointer" onclick="switchPage('inventory')">view all</span></div>`;
+  }
+
+  drawChart(products);
+}
+
+function drawChart(products){
+  const canvas=document.getElementById('chart-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.parentElement.clientWidth-2,H=240;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
+  const top=[...products].sort((a,b)=>b.totalProfit-a.totalProfit).slice(0,8).filter(p=>p.qty>0||p.totalProfit!==0||p.status==='Out of Stock');
+  if(!top.length){ctx.fillStyle='#aaa';ctx.font='13px Segoe UI';ctx.textAlign='center';ctx.fillText('Add products to see chart',W/2,H/2);return;}
+  const maxV=Math.max(...top.map(p=>Math.abs(p.totalProfit)),1);
+  const labelH=80;
+  const pad={t:10,b:labelH,l:8,r:8};
+  const ch=H-pad.t-pad.b;
+  const bw=Math.floor((W-pad.l-pad.r)/top.length);
+  const gap=Math.max(6,Math.floor(bw*.18));
+  const bwi=bw-gap;
+  // helper: wrap text into lines that fit within maxWidth
+  function wrapText(text,maxWidth,fontSize){
+    ctx.font=`500 ${fontSize}px Segoe UI,Arial,sans-serif`;
+    const words=text.split(' ');
+    const lines=[];let line='';
+    for(const w of words){
+      const test=line?line+' '+w:w;
+      if(ctx.measureText(test).width<=maxWidth){line=test;}
+      else{if(line)lines.push(line);line=w;}
+    }
+    if(line)lines.push(line);
+    return lines;
+  }
+  top.forEach((p,i)=>{
+    const isOOS=p.status==='Out of Stock';
+    const barH=isOOS ? 16 : Math.max(6,(p.totalProfit/maxV)*ch);
+    const x=pad.l+i*bw+gap/2;
+    const y=pad.t+ch-barH;
+    const barBottom=pad.t+ch;
+    const cx=x+bwi/2;
+    const color=p.status==='Healthy'?'#4ADE80':p.status==='Reorder Soon'?'#FCD34D':p.status==='Reorder Now'?'#FB923C':'#F87171';
+    // bar
+    ctx.shadowColor='rgba(0,0,0,.08)';ctx.shadowBlur=4;ctx.shadowOffsetY=2;
+    const r=Math.min(6,bwi/3);
+    ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+bwi-r,y);ctx.quadraticCurveTo(x+bwi,y,x+bwi,y+r);ctx.lineTo(x+bwi,barBottom);ctx.lineTo(x,barBottom);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+    if(isOOS){
+      // solid fill then diagonal hatch to signal "no stock"
+      ctx.fillStyle=color;ctx.globalAlpha=0.35;ctx.fill();ctx.globalAlpha=1;
+      ctx.save();ctx.clip();
+      ctx.strokeStyle=color;ctx.lineWidth=2;ctx.globalAlpha=0.6;
+      for(let hx=x-barH;hx<x+bwi+barH;hx+=6){ctx.beginPath();ctx.moveTo(hx,barBottom);ctx.lineTo(hx+barH,y);ctx.stroke();}
+      ctx.globalAlpha=1;ctx.restore();
+    } else {
+      ctx.fillStyle=color;ctx.fill();
+    }
+    ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+    // label — wrap to fit bar width, centered below bar
+    const fontSize=14;
+    const lineH=18;
+    const lines=wrapText(p.name, bwi+gap-4, 14);
+    ctx.fillStyle='#444';
+    ctx.font=`600 ${fontSize}px Segoe UI,Arial,sans-serif`;
+    ctx.textAlign='center';
+    ctx.textBaseline='top';
+    lines.slice(0,3).forEach((ln,li)=>{
+      ctx.fillText(ln, cx, barBottom+12+li*lineH);
+    });
+  });
+}
+
+// ─── Inventory ─────────────────────────────────────────────────────────────
+function renderInventory(){
+  const products=loadP().map(enrich);
+  const q=(document.getElementById('inv-search')?.value||'').toLowerCase();
+  const cf=document.getElementById('inv-cat')?.value||'';
+  const sf=document.getElementById('inv-status')?.value||'';
+  const cats=[...new Set(products.map(p=>p.category).filter(Boolean))].sort();
+  const cs=document.getElementById('inv-cat');const pv=cs.value;
+  cs.innerHTML='<option value="">All '+C.category+'s</option>'+cats.map(c=>`<option value="${esc(c)}"${pv===c?' selected':''}>${esc(c)}</option>`).join('');
+  let filtered=products;
+  if(q) filtered=filtered.filter(p=>[p.name,p.sku,p.category,p.supplier,p.storageLocation].some(v=>(v||'').toLowerCase().includes(q)));
+  if(cf) filtered=filtered.filter(p=>p.category===cf);
+  if(sf) filtered=filtered.filter(p=>p.status===sf);
+  filtered.sort((a,b)=>{let av=a[iSortCol],bv=b[iSortCol];if(typeof av==='string')av=av.toLowerCase();if(typeof bv==='string')bv=bv.toLowerCase();return av<bv?-iSortDir:av>bv?iSortDir:0;});
+  const body=document.getElementById('inv-body');
+  const wrap=document.querySelector('#page-inventory .tbl-card');
+  const empty=document.getElementById('inv-empty');
+  if(!filtered.length){if(wrap)wrap.style.display='none';empty.style.display='block';}
+  else{
+    if(wrap)wrap.style.display='';empty.style.display='none';
+    body.innerHTML=filtered.map((p,i)=>{
+      const fillPct=p.ro>0?Math.min(100,Math.round(p.qty/p.ro*100)):100;
+      return`
+      <tr class="${rowCls(p.status)}">
+        <td class="nc" style="color:var(--text-mid);font-size:12px">${i+1}</td>
+        <td style="font-weight:600">${esc(p.name)}${p.isAdvanced?`<br><span style="font-size:10px;color:#6B50B8;font-weight:600">⬡ Advanced costing</span>`:''}</td>
+        <td>${esc(p.category||'—')}</td>
+        <td class="col-sku"><span style="font-family:monospace;font-size:12px;background:#F0F4F8;padding:2px 7px;border-radius:4px;color:var(--text-mid)">${esc(p.sku||'—')}</span></td>
+        <td class="col-supplier" style="color:var(--text-mid)">${esc(p.supplier||'—')}</td>
+        <td class="col-location"><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--text-mid)">${p.storageLocation?`<span style="opacity:.6">📍</span>${esc(p.storageLocation)}`:'—'}</span></td>
+        <td class="col-costprice nr">${$f(p.cost)}</td>
+        <td class="col-saleprice nr">${$f(p.sale)}</td>
+        <td class="nr">
+          <div class="stock-bar-wrap" style="justify-content:flex-end">
+            <span style="font-weight:700">${num(p.qty)}</span>
+            <div class="stock-bar-track"><div class="stock-bar-fill ${p.statusKey}" style="width:${fillPct}%"></div></div>
+          </div>
+        </td>
+        <td class="col-reorder nr" style="color:var(--text-mid)">${num(p.ro)}</td>
+        <td class="nr">${p.orderQty>0?`<span style="font-weight:700;color:var(--amber-text)">+${num(p.orderQty)}</span>`:`<span style="color:var(--text-light)">—</span>`}</td>
+        <td class="col-totalcost nr" style="color:var(--text-mid)">${$f(p.totalCost)}${p.isAdvanced?`<br><span style="font-size:10px;color:#6B50B8">incl. all costs</span>`:''}</td>
+        <td class="nr" style="color:${p.profitUnit>=0?'var(--green-text)':'var(--red-text)'};font-weight:600">${$f(p.profitUnit)}</td>
+        <td class="nr" style="color:${p.totalProfit>=0?'var(--green-text)':'var(--red-text)'};font-weight:700">${$f(p.totalProfit)}</td>
+        <td><span class="badge ${badgeCls(p.status)}">${p.status}</span></td>
+        <td style="text-align:right;white-space:nowrap">
+          <button class="icon-btn" title="Edit" onclick="openProductModal('${p.id}')">✏️</button>
+          <button class="icon-btn" title="Delete" onclick="deleteProduct('${p.id}')">🗑️</button>
+        </td>
+      </tr>`}).join('');
+  }
+}
+
+// ─── Movements ─────────────────────────────────────────────────────────────
+function renderMovements(){
+  const movements=loadM();
+  const q=(document.getElementById('mov-search')?.value||'').toLowerCase();
+  const tf=document.getElementById('mov-type')?.value||'';
+  const sf=document.getElementById('mov-status')?.value||'';
+  let filtered=movements;
+  if(q) filtered=filtered.filter(m=>[m.itemName,m.sku,m.notes].some(v=>(v||'').toLowerCase().includes(q)));
+  if(tf) filtered=filtered.filter(m=>m.type===tf);
+  if(sf) filtered=filtered.filter(m=>m.status===sf);
+  const body=document.getElementById('mov-body');
+  const wrap=document.querySelector('#page-movements .tbl-card');
+  const empty=document.getElementById('mov-empty');
+  if(!filtered.length){if(wrap)wrap.style.display='none';empty.style.display='block';}
+  else{
+    if(wrap)wrap.style.display='';empty.style.display='none';
+    body.innerHTML=filtered.map(m=>{
+      const isIn=m.type==='Stock In'||m.type==='Return';
+      const tc=isIn?'var(--green-text)':'var(--red-text)';
+      return`<tr>
+        <td style="white-space:nowrap;color:var(--text-mid);font-size:12px">${dateStr(m.date)}</td>
+        <td style="color:var(--text-mid);font-size:12px">${esc(m.sku||'—')}</td>
+        <td style="font-weight:600">${esc(m.itemName||'—')}</td>
+        <td style="color:${tc};font-weight:600">${esc(m.type)}</td>
+        <td class="nr" style="color:${tc};font-weight:700">${isIn?'+':'−'}${num(m.qty)}</td>
+        <td class="nr">${m.price?$f(m.price):'—'}</td>
+        <td><span class="badge ${badgeCls(m.status)}">${esc(m.status)}</span></td>
+        <td style="color:var(--text-mid);font-size:12px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.notes||'')}</td>
+        <td style="text-align:right;white-space:nowrap">
+          <button class="icon-btn" title="Edit" onclick="openMovementModal('${m.id}')">✏️</button>
+          <button class="icon-btn" title="Delete" onclick="deleteMovement('${m.id}')">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+// ─── Profit ────────────────────────────────────────────────────────────────
+function renderProfit(){
+  const products=loadP().map(enrich);
+  const rev=products.reduce((s,p)=>s+p.sale*p.qty,0);
+  const cost=products.reduce((s,p)=>s+p.costBasis,0);
+  const prof=products.reduce((s,p)=>s+p.totalProfit,0);
+  const margin=rev>0?prof/rev:0;
+  document.getElementById('p-rev').textContent=$f(rev);
+  document.getElementById('p-cost').textContent=$f(cost);
+  document.getElementById('p-profit').textContent=$f(prof);
+  document.getElementById('p-margin').textContent=pct(margin);
+  const sorted=[...products].sort((a,b)=>b.totalProfit-a.totalProfit);
+  document.getElementById('profit-body').innerHTML=sorted.map(p=>{
+    const m=p.sale>0?p.profitUnit/p.sale:0;
+    return`<tr class="${rowCls(p.status)}">
+      <td style="font-weight:600">${esc(p.name)}${p.isAdvanced?` <span style="font-size:10px;color:#6B50B8;font-weight:600">⬡</span>`:''}</td>
+      <td>${esc(p.category||'—')}</td>
+      <td class="nr" style="color:var(--text-mid)">${$f(p.cost)}</td>
+      <td class="nr" style="color:var(--text-mid)">${$f(p.totalCost)}${p.isAdvanced?`<br><span style="font-size:10px;color:#6B50B8">+mat/labor/fees</span>`:''}</td>
+      <td class="nr">${$f(p.sale)}</td>
+      <td class="nr" style="font-weight:700;color:${p.profitUnit>=0?'var(--green-text)':'var(--red-text)'}">${$f(p.profitUnit)}</td>
+      <td class="nr">${num(p.qty)}</td>
+      <td class="nr" style="font-weight:700;color:${p.totalProfit>=0?'var(--green-text)':'var(--red-text)'}">${$f(p.totalProfit)}</td>
+      <td class="nr">${pct(m)}</td>
+    </tr>`;
+  }).join('');
+  const catMap={};
+  products.forEach(p=>{const c=p.category||'Uncategorized';if(!catMap[c])catMap[c]={rev:0,cost:0,profit:0,count:0};catMap[c].rev+=p.sale*p.qty;catMap[c].cost+=p.costBasis;catMap[c].profit+=p.totalProfit;catMap[c].count++;});
+  document.getElementById('profit-cat-body').innerHTML=Object.entries(catMap).sort((a,b)=>b[1].profit-a[1].profit).map(([c,d])=>`
+    <tr><td style="font-weight:600">${esc(c)}</td><td class="nr" style="color:var(--text-mid)">${d.count}</td>
+    <td class="nr">${$f(d.rev)}</td><td class="nr" style="color:var(--text-mid)">${$f(d.cost)}</td>
+    <td class="nr" style="font-weight:700;color:${d.profit>=0?'var(--green-text)':'var(--red-text)'}">${$f(d.profit)}</td>
+    <td class="nr">${d.rev>0?pct(d.profit/d.rev):'—'}</td></tr>`).join('');
+}
+
+// ─── CSV ───────────────────────────────────────────────────────────────────
+function exportCSV(){
+  const rows=loadP().map(enrich);
+  const h=[C.itemId.replace(' / ID',''),'Name',C.category,C.supplier,C.storageLocation,'Cost Price','Material Cost','Labor Cost','Additional Fees','Total Cost/Unit','Sale Price',C.qtyInStock,C.reorderAt.replace(' (qty)',''),'Cost Basis','Profit/Unit','Total Profit','Margin %','Status'];
+  const data=rows.map(p=>[p.sku,p.name,p.category,p.supplier,p.storageLocation||'',p.cost,p.material,p.labor,p.fees,p.totalCost,p.sale,p.qty,p.ro,p.costBasis,p.profitUnit,p.totalProfit,(p.margin*100).toFixed(1)+'%',p.status]);
+  const csv=[h,...data].map(r=>r.map(v=>typeof v==='string'&&(v.includes(',')||v.includes('"'))?'"'+v.replace(/"/g,'""')+'"':v??'').join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='inventory_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+function importCSV(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const lines=ev.target.result.split('\n').filter(Boolean);if(lines.length<2){alert('CSV appears empty.');return;}
+    const hdr=parseRow(lines[0]).map(h=>h.trim().toLowerCase());
+    const idx=k=>hdr.findIndex(h=>h.includes(k));
+    const[iName,iSku,iCat,iSup,iLoc,iCost,iSale,iQty,iRo]=[idx('name'),idx('sku'),idx('cat'),idx('sup'),idx('storage'),idx('cost price')||idx('cost'),idx('sale'),idx('qty'),idx('reorder')];
+    if(iName<0){alert('Could not find a "Name" column.');return;}
+    const newP=[];
+    for(let i=1;i<lines.length;i++){const c=parseRow(lines[i]);const name=c[iName]?.trim();if(!name)continue;newP.push({id:uid(),sku:iSku>=0?c[iSku]?.trim():'',name,category:iCat>=0?c[iCat]?.trim():'',supplier:iSup>=0?c[iSup]?.trim():'',storageLocation:iLoc>=0?c[iLoc]?.trim():'',costPrice:iCost>=0?parseFloat(c[iCost])||0:0,salePrice:iSale>=0?parseFloat(c[iSale])||0:0,qtyInStock:iQty>=0?parseInt(c[iQty])||0:0,reorderAt:iRo>=0?parseInt(c[iRo])||0:0,createdAt:new Date().toISOString()});}
+    if(!newP.length){alert('No valid rows found.');return;}
+    if(!window.confirm(`Import ${newP.length} ${C.items.toLowerCase()}? They will be added to your existing inventory.`))return;
+    saveP([...loadP(),...newP]);renderInventory();renderDashboard();alert(`Imported ${newP.length} ${C.items.toLowerCase()}.`);
+  };
+  reader.readAsText(file);e.target.value='';
+}
+function parseRow(row){const r=[];let cur='',inQ=false;for(let i=0;i<row.length;i++){const ch=row[i];if(ch==='"'){if(inQ&&row[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}else if(ch===','&&!inQ){r.push(cur);cur='';}else cur+=ch;}r.push(cur);return r;}
+
+// ─── Backup & Restore ──────────────────────────────────────────────────────
+function showToast(icon, msg){
+  const t=document.getElementById('backup-toast');
+  t.innerHTML=`<span class="toast-icon">${icon}</span>${msg}`;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+function backupData(){
+  const payload={
+    version:1,
+    exportedAt:new Date().toISOString(),
+    products:loadP(),
+    movements:loadM()
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  const date=new Date().toISOString().slice(0,10);
+  a.href=URL.createObjectURL(blob);
+  a.download=`inventory-backup-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('✅','Backup saved');
+}
+function restoreData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const payload=JSON.parse(ev.target.result);
+      if(!payload.products||!Array.isArray(payload.products))throw new Error('Invalid backup file.');
+      if(!window.confirm(`Restore ${payload.products.length} ${C.items.toLowerCase()} and ${(payload.movements||[]).length} movements?\n\nThis will replace your current data.`))return;
+      saveP(payload.products);
+      saveM(payload.movements||[]);
+      renderDashboard();
+      if(document.getElementById('page-inventory').classList.contains('active'))renderInventory();
+      if(document.getElementById('page-movements').classList.contains('active'))renderMovements();
+      if(document.getElementById('page-profit').classList.contains('active'))renderProfit();
+      showToast('🎉','Data restored successfully');
+    }catch(err){
+      alert('Could not read backup file. Please make sure it\'s a valid inventory backup.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// ─── Column visibility ──────────────────────────────────────────────────────
+const COL_KEY='inv_cols';
+function loadColState(){try{return JSON.parse(localStorage.getItem(COL_KEY)||'null')||{};}catch{return {};}}
+function saveColState(state){localStorage.setItem(COL_KEY,JSON.stringify(state));}
+function toggleCol(col,chip){
+  const tbl=document.getElementById('inv-tbl');
+  const active=chip.classList.toggle('active');
+  if(active) tbl.classList.remove('hide-'+col);
+  else tbl.classList.add('hide-'+col);
+  const state=loadColState();state[col]=active;saveColState(state);
+}
+function applyColState(){
+  const state=loadColState();
+  const tbl=document.getElementById('inv-tbl');
+  document.querySelectorAll('.col-chip').forEach(chip=>{
+    const col=chip.dataset.col;
+    // default: all visible (true) — only hide if explicitly set to false
+    const visible=state[col]!==false;
+    chip.classList.toggle('active',visible);
+    tbl.classList.toggle('hide-'+col,!visible);
+  });
+}
+
+// ─── Init ──────────────────────────────────────────────────────────────────
+window.addEventListener('resize',()=>{
+  if(document.getElementById('page-dashboard').classList.contains('active'))
+    drawChart(loadP().map(enrich));
+});
+
+// On mobile, auto-collapse secondary cols if user has never set a preference
+function applyMobileColDefaults(){
+  if(window.innerWidth>900) return;
+  const state=loadColState();
+  const secondaryCols=['sku','supplier','location','totalcost','reorder'];
+  let changed=false;
+  secondaryCols.forEach(col=>{if(state[col]===undefined){state[col]=false;changed=true;}});
+  if(changed) saveColState(state);
+}
+
+(function init(){
+  applyConfig(); // wire all niche labels into DOM
+  const hasData=loadP().length>0;
+  if(!hasData){
+    saveP(SAMPLE_PRODUCTS.map(p=>({...p,id:uid()})));
+  }
+  applyMobileColDefaults();
+  applyColState();
+  const firstTime=!localStorage.getItem('inv_ob')&&!hasData;
+  document.getElementById('ob').style.display=firstTime?'flex':'none';
+  document.getElementById('ob-hint').style.display=firstTime?'none':'none'; // shown after sample load
+  renderDashboard();
+})();
+</script>
+</body>
+</html>
