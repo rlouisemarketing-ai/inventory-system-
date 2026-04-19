@@ -1,3 +1,5 @@
-cd "/Users/rebekahhart/Claude Code/heart-check-app"
-git push origin claude/kind-mestorf-f98979
-
+{
+  "buildCommand": "",
+  "outputDirectory": "public",
+  "framework": null
+}
