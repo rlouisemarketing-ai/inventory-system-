@@ -1,5 +1,3 @@
-{
-  "rewrites": [
-    { "source": "/", "destination": "/inventory-tracker-v8-core-2 (1).html" }
-  ]
-}
+cd "/Users/rebekahhart/Claude Code/heart-check-app"
+git push origin claude/kind-mestorf-f98979
+
