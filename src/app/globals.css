@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Readable scripture body text */
+.scripture-body {
+  font-family: Georgia, Cambria, 'Times New Roman', serif;
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+/* Subtle fade-in for page transitions */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.3s ease-out both;
+}
