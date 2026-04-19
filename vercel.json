@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/inventory-tracker-v8-core-2 (1).html" }
+  ]
+}
