@@ -1567,7 +1567,7 @@ function renderDashboard(){
     if(restock.length>5) list.innerHTML+=`<div style="text-align:center;padding:10px 0;font-size:12px;color:var(--text-mid)">+${restock.length-5} more — <span style="color:var(--chart-blue);cursor:pointer" onclick="switchPage('inventory')">view all</span></div>`;
   }
 
-  drawChart(products);
+  requestAnimationFrame(()=>drawChart(products));
 }
 
 function drawChart(products){
