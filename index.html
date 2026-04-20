@@ -1578,10 +1578,12 @@ function drawChart(products){
   canvas.width=W*dpr;canvas.height=H*dpr;
   canvas.style.width=W+'px';canvas.style.height=H+'px';
   ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
-  const top=[...products].sort((a,b)=>b.totalProfit-a.totalProfit).slice(0,8).filter(p=>p.qty>0||p.totalProfit!==0||p.status==='Out of Stock');
+  const maxBars=W<400?4:W<560?5:8;
+  const fontSize=W<400?11:W<560?12:14;
+  const labelH=W<400?56:W<560?64:80;
+  const top=[...products].sort((a,b)=>b.totalProfit-a.totalProfit).slice(0,maxBars).filter(p=>p.qty>0||p.totalProfit!==0||p.status==='Out of Stock');
   if(!top.length){ctx.fillStyle='#aaa';ctx.font='13px Segoe UI';ctx.textAlign='center';ctx.fillText('Add products to see chart',W/2,H/2);return;}
   const maxV=Math.max(...top.map(p=>Math.abs(p.totalProfit)),1);
-  const labelH=80;
   const pad={t:10,b:labelH,l:8,r:8};
   const ch=H-pad.t-pad.b;
   const bw=Math.floor((W-pad.l-pad.r)/top.length);
@@ -1624,7 +1626,6 @@ function drawChart(products){
     }
     ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;
     // label — wrap to fit bar width, centered below bar
-    
     const lineH=fontSize+4;
     const lines=wrapText(p.name, bwi+gap-4, fontSize);
     ctx.fillStyle='#444';
@@ -1858,10 +1859,10 @@ function applyColState(){
 }
 
 // ─── Init ──────────────────────────────────────────────────────────────────
-window.addEventListener('resize',()=>{
+new ResizeObserver(()=>{
   if(document.getElementById('page-dashboard').classList.contains('active'))
     drawChart(loadP().map(enrich));
-});
+}).observe(document.getElementById('chart-canvas').parentElement);
 
 // On mobile, auto-collapse secondary cols if user has never set a preference
 function applyMobileColDefaults(){
