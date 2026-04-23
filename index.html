@@ -417,11 +417,11 @@ thead th{position:sticky;top:0;z-index:3}
   #inv-tbl .col-totalcost,
   #inv-tbl .col-reorder{display:none}
   /* Explicit show (chip toggled on) overrides the auto-hide */
-  #inv-tbl:not(.hide-sku) .col-sku.mob-show{display:table-cell}
-  #inv-tbl:not(.hide-supplier) .col-supplier.mob-show{display:table-cell}
-  #inv-tbl:not(.hide-location) .col-location.mob-show{display:table-cell}
-  #inv-tbl:not(.hide-totalcost) .col-totalcost.mob-show{display:table-cell}
-  #inv-tbl:not(.hide-reorder) .col-reorder.mob-show{display:table-cell}
+  #inv-tbl:not(.hide-sku) .col-sku{display:table-cell}
+  #inv-tbl:not(.hide-supplier) .col-supplier{display:table-cell}
+  #inv-tbl:not(.hide-location) .col-location{display:table-cell}
+  #inv-tbl:not(.hide-totalcost) .col-totalcost{display:table-cell}
+  #inv-tbl:not(.hide-reorder) .col-reorder{display:table-cell}
 
   /* Col chips: bigger tap area */
   .col-chip{padding:9px 14px;font-size:12px;min-height:38px}
@@ -488,7 +488,7 @@ thead th{position:sticky;top:0;z-index:3}
 /* ── FLOATING ACTION BUTTON ── */
 .fab{display:none;position:fixed;bottom:76px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--chart-blue);color:#fff;border:none;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 4px 16px rgba(91,153,217,.5);z-index:150;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent}
 .fab:active{transform:scale(.93);box-shadow:0 2px 8px rgba(91,153,217,.4)}
-@media(max-width:900px){.fab{display:flex}}
+@media(max-width:900px){.fab{display:flex}.tbl-wrap{padding-right:62px}}
 
 /* ── NEW DASHBOARD ── */
 .dash-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap;gap:12px}
@@ -1728,7 +1728,7 @@ function renderInventory(){
   const sf=document.getElementById('inv-status')?.value||'';
   const cats=[...new Set(products.map(p=>p.category).filter(Boolean))].sort();
   const cs=document.getElementById('inv-cat');const pv=cs.value;
-  cs.innerHTML='<option value="">All '+C.category+'s</option>'+cats.map(c=>`<option value="${esc(c)}"${pv===c?' selected':''}>${esc(c)}</option>`).join('');
+  cs.innerHTML='<option value="">All Categories</option>'+cats.map(c=>`<option value="${esc(c)}"${pv===c?' selected':''}>${esc(c)}</option>`).join('');
   let filtered=products;
   if(q) filtered=filtered.filter(p=>[p.name,p.sku,p.category,p.supplier,p.storageLocation].some(v=>(v||'').toLowerCase().includes(q)));
   if(cf) filtered=filtered.filter(p=>p.category===cf);
@@ -1775,11 +1775,16 @@ function renderInventory(){
 // ─── Movements ─────────────────────────────────────────────────────────────
 function renderMovements(){
   const movements=loadM();
+  const products=loadP();
   const q=(document.getElementById('mov-search')?.value||'').toLowerCase();
   const tf=document.getElementById('mov-type')?.value||'';
   const sf=document.getElementById('mov-status')?.value||'';
   let filtered=movements;
-  if(q) filtered=filtered.filter(m=>[m.itemName,m.sku,m.notes].some(v=>(v||'').toLowerCase().includes(q)));
+  if(q) filtered=filtered.filter(m=>{
+    const prod=m.productId?products.find(p=>p.id===m.productId):null;
+    const name=m.itemName||prod?.name||'';
+    return [name,m.sku,m.notes].some(v=>(v||'').toLowerCase().includes(q));
+  });
   if(tf) filtered=filtered.filter(m=>m.type===tf);
   if(sf) filtered=filtered.filter(m=>m.status===sf);
   const body=document.getElementById('mov-body');
@@ -1789,12 +1794,14 @@ function renderMovements(){
   else{
     if(wrap)wrap.style.display='';empty.style.display='none';
     body.innerHTML=filtered.map(m=>{
-      const isIn=m.type==='Stock In'||m.type==='Return';
+      const prod=m.productId?products.find(p=>p.id===m.productId):null;
+      const displayName=m.itemName||prod?.name||m.sku||'—';
+      const isIn=m.type==='Stock In'||m.type==='Return'||m.type==='Purchase'||m.type==='Restock';
       const tc=isIn?'var(--green-text)':'var(--red-text)';
       return`<tr>
         <td style="white-space:nowrap;color:var(--text-mid);font-size:12px">${dateStr(m.date)}</td>
         <td style="color:var(--text-mid);font-size:12px">${esc(m.sku||'—')}</td>
-        <td style="font-weight:600">${esc(m.itemName||'—')}</td>
+        <td style="font-weight:600">${esc(displayName)}</td>
         <td style="color:${tc};font-weight:600">${esc(m.type)}</td>
         <td class="nr" style="color:${tc};font-weight:700">${isIn?'+':'−'}${num(m.qty)}</td>
         <td class="nr">${m.price?$f(m.price):'—'}</td>
