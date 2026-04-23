@@ -489,6 +489,34 @@ thead th{position:sticky;top:0;z-index:3}
 .fab{display:none;position:fixed;bottom:76px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--chart-blue);color:#fff;border:none;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 4px 16px rgba(91,153,217,.5);z-index:150;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent}
 .fab:active{transform:scale(.93);box-shadow:0 2px 8px rgba(91,153,217,.4)}
 @media(max-width:900px){.fab{display:flex}}
+
+/* ── NEW DASHBOARD ── */
+.dash-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.dash-title{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.dash-sub{font-size:13px;color:var(--text-mid);margin-top:5px}
+.dash-filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.dash-date-pill{padding:8px 13px;background:#fff;border:1px solid var(--gray);border-radius:8px;font-size:13px;color:var(--text);font-weight:500;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.donut-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap;min-height:120px}
+.donut-legend{flex:1;min-width:140px}
+.donut-legend-item{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:13px;gap:8px}
+.donut-legend-item:last-child{margin-bottom:0}
+.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.donut-legend-left{display:flex;align-items:center;gap:8px;flex:1;color:var(--text-mid)}
+.donut-legend-right{font-weight:700;color:var(--text);white-space:nowrap}
+.activity-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F5F5F5}
+.activity-row:last-child{border-bottom:none}
+.act-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.act-text{flex:1;font-size:13px;color:var(--text);line-height:1.3}
+.act-date{font-size:11px;color:var(--text-light);white-space:nowrap;margin-top:2px}
+.ls-tbl{width:100%;border-collapse:collapse}
+.ls-tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-mid);padding:10px 14px;border-bottom:1px solid #F0F0F0;text-align:left;background:#fff}
+.ls-tbl td{font-size:13px;padding:10px 14px;border-bottom:1px solid #F8F8F8;color:var(--text)}
+.ls-tbl tr:last-child td{border-bottom:none}
+.ls-tbl .nr{text-align:center}
+.sb-switch-section{padding:10px 12px;border-top:1px solid #E8EDF4}
+.sb-switch-btn{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:8px;background:#EBF4FF;color:#2563EB;border:1.5px solid #BFDBFE;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:6px;width:100%;transition:all .15s;text-align:left}
+.sb-switch-btn:hover{background:#DBEAFE}
+.sb-switch-btn:last-child{margin-bottom:0}
 </style>
 </head>
 <body>
@@ -555,52 +583,54 @@ thead th{position:sticky;top:0;z-index:3}
 
     <nav class="sb-nav">
       <div class="sb-section">
-        <div class="sb-section-label">Navigate</div>
         <div class="sb-item active" data-page="dashboard" onclick="switchPage('dashboard')">
           <span class="sb-icon">⊞</span> Dashboard
+        </div>
+        <div class="sb-item" data-page="inventory" onclick="switchPage('inventory')">
+          <span class="sb-icon">☰</span> <span id="sb-items-label">Inventory</span>
+        </div>
+        <div class="sb-item" data-page="profit" onclick="switchPage('profit')">
+          <span class="sb-icon">📊</span> Profit &amp; Loss
         </div>
         <div class="sb-item" onclick="switchPage('inventory');openProductModal()">
           <span class="sb-icon">+</span> <span id="sb-add-item">Add Product</span>
         </div>
-      </div>
-      <div class="sb-section">
-        <div class="sb-section-label">Inventory</div>
-        <div class="sb-item" data-page="inventory" onclick="switchPage('inventory')">
-          <span class="sb-icon">☰</span> <span id="sb-items-label">Products</span>
+        <div class="sb-item" onclick="switchPage('inventory')">
+          <span class="sb-icon">🏷</span> Categories
         </div>
-        <div class="sb-item" data-page="movements" onclick="switchPage('movements')">
-          <span class="sb-icon">↕</span> Stock In/Out
+        <div class="sb-item" onclick="switchPage('inventory')">
+          <span class="sb-icon">🏢</span> Suppliers
         </div>
-      </div>
-      <div class="sb-section">
-        <div class="sb-section-label">Insights</div>
-        <div class="sb-item" data-page="profit" onclick="switchPage('profit')">
-          <span class="sb-icon">$</span> Profit Analysis
+        <div class="sb-item" id="sb-export-item" onclick="toggleExportPanel()">
+          <span class="sb-icon">💾</span> Export &amp; Backup
+        </div>
+        <div class="sb-item" onclick="previewOnboarding()">
+          <span class="sb-icon">⚙</span> Settings
         </div>
       </div>
     </nav>
 
-    <div class="sb-actions">
-      <div class="sb-section-label" style="padding:0 0 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:#A8B5C4">CSV</div>
+    <!-- Export panel (hidden by default) -->
+    <div id="sb-export-panel" style="display:none;padding:0 12px 10px;border-bottom:1px solid #E8EDF4">
       <div class="sb-action-row">
-        <button class="sb-action-btn" onclick="exportCSV()">↓ Export</button>
-        <label class="sb-action-btn" style="cursor:pointer">↑ Import<input type="file" accept=".csv" style="display:none" onchange="importCSV(event)"></label>
+        <button class="sb-action-btn" onclick="exportCSV()">↓ CSV Export</button>
+        <label class="sb-action-btn" style="cursor:pointer">↑ CSV Import<input type="file" accept=".csv" style="display:none" onchange="importCSV(event)"></label>
       </div>
-      <div class="sb-backup-divider"></div>
-      <div class="sb-section-label" style="padding:0 0 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:#A8B5C4">Backup</div>
-      <div class="sb-action-row">
+      <div class="sb-action-row" style="margin-top:6px">
         <button class="sb-action-btn sb-backup-btn" onclick="backupData()">☁ Save Backup</button>
         <label class="sb-action-btn sb-restore-btn" style="cursor:pointer">↩ Restore<input type="file" accept=".json" style="display:none" onchange="restoreData(event)"></label>
       </div>
-      <div class="sb-action-row" style="margin-top:8px">
-        <button class="sb-action-btn" style="flex:1" onclick="previewOnboarding()">Quick Start Guide</button>
-      </div>
-      <div class="sb-action-row" style="margin-top:8px">
+      <div class="sb-action-row" style="margin-top:6px">
         <button class="sb-action-btn" style="flex:1;background:#F0FDF4;color:#16A34A;border-color:#BBF7D0" onclick="loadSampleData()">📦 Load Sample Data</button>
       </div>
-      <div class="sb-action-row" style="margin-top:8px">
+      <div class="sb-action-row" style="margin-top:6px">
         <button class="sb-action-btn" style="flex:1;background:#FFF0F0;color:#8B1A1A;border-color:#F5C0C0" onclick="clearData()">🗑 Clear All Data</button>
       </div>
+    </div>
+
+    <div class="sb-switch-section">
+      <button class="sb-switch-btn" onclick="alert('Etsy version coming soon!')">🛍 Switch to Etsy</button>
+      <button class="sb-switch-btn" onclick="alert('TikTok Shop version coming soon!')">🎵 Switch to TikTok Shop</button>
     </div>
 
     <!-- Backup toast -->
@@ -627,99 +657,83 @@ thead th{position:sticky;top:0;z-index:3}
 
     <!-- ── DASHBOARD ── -->
     <div class="page active" id="page-dashboard">
-      <div class="greeting">
-        <div class="greeting-line">Good <span class="greeting-accent" id="greeting-word">morning.</span></div>
-        <div class="greeting-sub" id="greeting-sub">Here's where your business stands right now.</div>
-      </div>
 
-      <!-- Onboarding hint -->
+      <!-- Hidden onboarding hint (kept for JS compatibility) -->
       <div class="ob-hint" id="ob-hint" style="display:none">
         <span class="hint-icon">📝</span>
         <span class="hint-text">Enter your product details below. Everything calculates automatically.</span>
         <button class="hint-close" onclick="document.getElementById('ob-hint').style.display='none'" title="Dismiss">✕</button>
       </div>
 
-      <!-- Today's Snapshot -->
-      <div class="snapshot-panel" id="snapshot-panel"></div>
-
-      <!-- CTA row -->
-      <div class="cta-row">
-        <button class="cta-primary" onclick="switchPage('inventory');openProductModal()">
-          <span class="cta-icon">+</span> Add a Product
-        </button>
-        <button class="cta-secondary" onclick="switchPage('movements');openMovementModal()">
-          <span class="cta-icon">↕</span> Log a Movement
-        </button>
-      </div>
-
-      <!-- Summary metrics -->
-      <div class="dash-section-label">Business Summary</div>
-      <div class="summary-grid">
-        <div class="summary-card">
-          <div class="summary-icon" style="background:#EBF4FF;color:#2563EB">📦</div>
-          <div class="summary-body">
-            <div class="summary-value" id="s-inv-value">—</div>
-            <div class="summary-label" id="lbl-inv-value">Total Inventory Value</div>
-            <div class="summary-sub">cost basis of all stock on hand</div>
-          </div>
+      <!-- Header -->
+      <div class="dash-header">
+        <div>
+          <div class="dash-title">Welcome back!</div>
+          <div class="dash-sub">Here's what's happening with your inventory today.</div>
         </div>
-        <div class="summary-card">
-          <div class="summary-icon" style="background:#DCFCE7;color:#16A34A">💰</div>
-          <div class="summary-body">
-            <div class="summary-value" id="s-profit-pot" style="color:var(--green-text)">—</div>
-            <div class="summary-label" id="lbl-profit-pot">Profit Potential</div>
-            <div class="summary-sub">if all stock sells at full price</div>
-          </div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-icon" style="background:#FEF9C3;color:#A16207">⚠</div>
-          <div class="summary-body">
-            <div class="summary-value" id="s-below-reorder" style="color:var(--amber-text)">—</div>
-            <div class="summary-label" id="lbl-below-reorder">Below Reorder Level</div>
-            <div class="summary-sub">items needing attention now</div>
-          </div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-icon" style="background:#F3E8FF;color:#7C3AED">🏆</div>
-          <div class="summary-body">
-            <div class="summary-value summary-value-sm" id="s-top-product">—</div>
-            <div class="summary-label" id="lbl-top-item">Top Profitable Product</div>
-            <div class="summary-sub" id="s-top-product-sub"></div>
-          </div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-icon" style="background:#FFF1F2;color:#BE123C">📉</div>
-          <div class="summary-body">
-            <div class="summary-value summary-value-sm" id="s-low-margin">—</div>
-            <div class="summary-label" id="lbl-low-margin">Lowest Margin Product</div>
-            <div class="summary-sub" id="s-low-margin-sub"></div>
-          </div>
+        <div class="dash-filters">
+          <select class="fsel" id="dash-cat-filter" onchange="renderDashboard()">
+            <option value="">All Categories</option>
+          </select>
+          <div class="dash-date-pill" id="dash-date">📅 —</div>
         </div>
       </div>
 
-      <!-- Bottom grid: chart + restock -->
-      <div class="dash-section-label" style="margin-top:8px">Stock Overview</div>
-      <div class="bottom-grid">
+      <!-- 5 Stat Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Products</div>
+          <div class="stat-number" id="d-total-products">—</div>
+          <div class="stat-sub">All products</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Quantity</div>
+          <div class="stat-number" id="d-total-qty">—</div>
+          <div class="stat-sub">Units in stock</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" style="color:var(--red-text)">Low Stock</div>
+          <div class="stat-number red" id="d-low-stock">—</div>
+          <div class="stat-sub">Need restocking</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" style="color:var(--chart-blue)">Total Value</div>
+          <div class="stat-number blue" id="d-total-value">—</div>
+          <div class="stat-sub">Inventory value</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" style="color:var(--green-text)">Total Profit</div>
+          <div class="stat-number green" id="d-total-profit">—</div>
+          <div class="stat-sub">Total profit</div>
+        </div>
+      </div>
+
+      <!-- Row 1: Inventory Overview + Top Categories -->
+      <div class="bottom-grid" style="margin-bottom:16px">
         <div class="card">
-          <div class="card-head"><div class="card-title" id="lbl-profit-chart">Profit by Product</div></div>
+          <div class="card-head"><div class="card-title">Inventory Overview</div></div>
           <div class="card-body">
-            <canvas id="chart-canvas" height="160"></canvas>
-            <div class="chart-legend-wrap">
-              <div class="chart-note">Bar height = profit on current stock on hand.</div>
-              <div class="chart-legend">
-                <span class="cl-item"><span class="cl-dot" style="background:#4ADE80"></span>Healthy</span>
-                <span class="cl-item"><span class="cl-dot" style="background:#FCD34D"></span>Reorder Soon</span>
-                <span class="cl-item"><span class="cl-dot" style="background:#FB923C"></span>Reorder Now</span>
-                <span class="cl-item"><span class="cl-dot cl-dot-oos" style="background:#F87171"></span>Out of Stock</span>
-              </div>
+            <div class="donut-wrap">
+              <canvas id="donut-canvas" width="140" height="140" style="flex-shrink:0"></canvas>
+              <div class="donut-legend" id="donut-legend"></div>
             </div>
           </div>
         </div>
-
         <div class="card">
-          <div class="card-head"><div class="card-title" id="lbl-restock-card">Restock Needed</div></div>
-          <div class="card-sub">Click any item to view your full inventory.</div>
-          <div class="card-body" style="padding-top:4px" id="dash-restock-list"></div>
+          <div class="card-head"><div class="card-title">Top Categories</div></div>
+          <div class="card-body" id="dash-cat-bars"></div>
+        </div>
+      </div>
+
+      <!-- Row 2: Low Stock Alert + Recent Activities -->
+      <div class="bottom-grid">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Low Stock Alert</div></div>
+          <div class="card-body" style="padding:0;overflow:auto" id="dash-lowstock-table"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Recent Activities</div></div>
+          <div class="card-body" style="padding-top:4px" id="dash-activities"></div>
         </div>
       </div>
     </div>
@@ -1490,84 +1504,153 @@ function deleteMovement(id){confirm2('Delete this movement record?',()=>{saveM(l
 
 // ─── Dashboard ─────────────────────────────────────────────────────────────
 function renderDashboard(){
-  const products=loadP().map(enrich);
-  const restock=products.filter(p=>p.status==='Reorder Soon'||p.status==='Reorder Now'||p.status==='Out of Stock');
-  const oos=products.filter(p=>p.status==='Out of Stock');
-  const needNow=products.filter(p=>p.status==='Reorder Now'||p.status==='Out of Stock');
-  const cap=products.reduce((s,p)=>s+p.costBasis,0);
-  const rev=products.reduce((s,p)=>s+p.sale*p.qty,0);
-  const prof=products.reduce((s,p)=>s+p.totalProfit,0);
-  const lowMoving=restock.reduce((s,p)=>s+p.costBasis,0);
+  const allProducts=loadP().map(enrich);
+  const movements=loadM();
 
-  // Greeting
-  const h=new Date().getHours();
-  const word=h<12?'morning.':h<17?'afternoon.':h<21?'evening.':'night.';
-  document.getElementById('greeting-word').textContent=word;
-
-  // Today's Snapshot
-  const snap=document.getElementById('snapshot-panel');
-  const snapLines=[];
-  if(products.length===0){
-    snap.className='snapshot-panel good';
-    snap.innerHTML=`<div class="snapshot-title">Today's Snapshot</div><div class="snapshot-line"><span class="snap-icon">👋</span>Add your first ${C.item.toLowerCase()} to get started.</div>`;
-  } else {
-    const urgency=needNow.length>0?'alert':restock.length>0?'warn':'good';
-    snap.className=`snapshot-panel ${urgency}`;
-    if(needNow.length>0)
-      snapLines.push(`<div class="snapshot-line"><span class="snap-icon">🚨</span><span><strong>${needNow.length} item${needNow.length>1?'s':''}</strong> need restocking right now</span></div>`);
-    else if(restock.length>0)
-      snapLines.push(`<div class="snapshot-line"><span class="snap-icon">⚠️</span><span><strong>${restock.length} item${restock.length>1?'s':''}</strong> approaching their reorder point</span></div>`);
-    else
-      snapLines.push(`<div class="snapshot-line"><span class="snap-icon">✅</span><span>All ${C.items.toLowerCase()} are <strong>well stocked</strong> — nothing to reorder</span></div>`);
-    if(lowMoving>0)
-      snapLines.push(`<div class="snapshot-line"><span class="snap-icon">💤</span><span><strong>${$f(lowMoving)}</strong> tied up in low or out-of-stock inventory</span></div>`);
-    snapLines.push(`<div class="snapshot-line"><span class="snap-icon">📦</span><span>You're tracking <strong>${products.length} ${products.length>1?C.items.toLowerCase():C.item.toLowerCase()}</strong> with <strong>${$f(rev)}</strong> in potential revenue</span></div>`);
-    snap.innerHTML=`<div class="snapshot-title">Today's Snapshot</div>`+snapLines.join('');
+  // Populate category filter
+  const catSel=document.getElementById('dash-cat-filter');
+  if(catSel){
+    const cats=[...new Set(allProducts.map(p=>p.category||'').filter(Boolean))].sort();
+    const cur=catSel.value;
+    catSel.innerHTML='<option value="">All Categories</option>'+cats.map(c=>`<option${c===cur?' selected':''}>${esc(c)}</option>`).join('');
   }
 
-  // Summary cards
-  const fmt=n=>n>=1000?'$'+Math.round(n).toLocaleString():$f(n);
-  document.getElementById('s-inv-value').textContent=fmt(cap);
-  document.getElementById('s-profit-pot').textContent=fmt(prof);
-  document.getElementById('s-below-reorder').textContent=restock.length||'None';
+  // Apply filter
+  const catFilter=(catSel&&catSel.value)||'';
+  const products=catFilter?allProducts.filter(p=>(p.category||'')===catFilter):allProducts;
 
-  const byProfit=[...products].filter(p=>p.sale>0).sort((a,b)=>b.totalProfit-a.totalProfit);
-  const topP=byProfit[0];
-  const topEl=document.getElementById('s-top-product');
-  const topSub=document.getElementById('s-top-product-sub');
-  if(topP){topEl.textContent=topP.name;topSub.textContent=`${$f(topP.totalProfit)} total profit · ${pct(topP.margin)} margin`;}
-  else{topEl.textContent='—';topSub.textContent='Add products with sale prices';}
+  // Date pill
+  const dateEl=document.getElementById('dash-date');
+  if(dateEl){const d=new Date();dateEl.innerHTML='📅 '+d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}
 
-  const byMargin=[...products].filter(p=>p.sale>0).sort((a,b)=>a.margin-b.margin);
-  const lowP=byMargin[0];
-  const lowEl=document.getElementById('s-low-margin');
-  const lowSub=document.getElementById('s-low-margin-sub');
-  if(lowP){
-    lowEl.textContent=lowP.name;
-    lowEl.style.color=lowP.margin<0?'var(--red-text)':'var(--text)';
-    lowSub.textContent=`${pct(lowP.margin)} margin · ${$f(lowP.profitUnit)}/unit`;
-  } else{lowEl.textContent='—';lowSub.textContent='No '+C.items.toLowerCase()+' with sale prices yet';}
+  // Stats
+  const totalQty=products.reduce((s,p)=>s+p.qty,0);
+  const lowStockItems=products.filter(p=>p.status!=='Healthy');
+  const totalValue=products.reduce((s,p)=>s+p.costBasis,0);
+  const totalProfit=products.reduce((s,p)=>s+p.totalProfit,0);
+  const fmt=n=>n===0?'$0.00':n>=1000?'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):$f(n);
 
-  // Restock list
-  const list=document.getElementById('dash-restock-list');
-  if(!restock.length){
-    list.innerHTML=`<div style="text-align:center;padding:24px 0;color:var(--text-mid);font-size:13px">✅ All ${C.items.toLowerCase()} are sufficiently stocked</div>`;
-  } else {
-    const avatarColors=['#5B99D9','#7CB342','#E8B366','#D17C7C','#9B59B6','#E67E22','#1ABC9C'];
-    list.innerHTML=restock.slice(0,5).map((p,i)=>`
-      <div class="person-row" onclick="switchPage('inventory')">
-        <div class="person-avatar" style="background:${avatarColors[i%avatarColors.length]}">${p.name.charAt(0).toUpperCase()}</div>
-        <div class="person-info">
-          <div class="person-name">${esc(p.name)}</div>
-          <div class="person-meta">${esc(p.category||C.item)} · ${p.qty} in stock · Reorder at ${p.ro}${p.orderQty>0?` · <strong>Order +${p.orderQty}</strong>`:''}</div>
-          <span class="person-tag badge ${badgeCls(p.status)}">${p.status}</span>
-        </div>
-        <div class="person-arrow">›</div>
-      </div>`).join('');
-    if(restock.length>5) list.innerHTML+=`<div style="text-align:center;padding:10px 0;font-size:12px;color:var(--text-mid)">+${restock.length-5} more — <span style="color:var(--chart-blue);cursor:pointer" onclick="switchPage('inventory')">view all</span></div>`;
+  document.getElementById('d-total-products').textContent=products.length||'0';
+  document.getElementById('d-total-qty').textContent=totalQty.toLocaleString();
+  document.getElementById('d-low-stock').textContent=lowStockItems.length||'0';
+  document.getElementById('d-total-value').textContent=fmt(totalValue);
+  document.getElementById('d-total-profit').textContent=fmt(totalProfit);
+
+  // Donut chart
+  const inStock=products.filter(p=>p.status==='Healthy').length;
+  const lowStock=products.filter(p=>p.status==='Reorder Soon'||p.status==='Reorder Now').length;
+  const outOfStock=products.filter(p=>p.status==='Out of Stock').length;
+  drawDonut(inStock,lowStock,outOfStock,products.length);
+
+  // Top categories (by product count)
+  const catCounts={};
+  allProducts.forEach(p=>{const c=p.category||'Uncategorized';catCounts[c]=(catCounts[c]||0)+1;});
+  const sortedCats=Object.entries(catCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxCat=sortedCats[0]?.[1]||1;
+  const catBars=document.getElementById('dash-cat-bars');
+  if(catBars){
+    if(!sortedCats.length){
+      catBars.innerHTML='<div style="text-align:center;padding:24px;color:var(--text-mid);font-size:13px">No categories yet</div>';
+    } else {
+      catBars.innerHTML=sortedCats.map(([name,count])=>`
+        <div class="cat-row">
+          <div class="cat-name">${esc(name)}</div>
+          <div class="cat-track"><div class="cat-fill" style="width:${(count/maxCat*100).toFixed(1)}%"></div></div>
+          <div class="cat-val">${count}</div>
+        </div>`).join('');
+    }
   }
 
-  requestAnimationFrame(()=>drawChart(products));
+  // Low stock alert table
+  const lstbl=document.getElementById('dash-lowstock-table');
+  if(lstbl){
+    if(!lowStockItems.length){
+      lstbl.innerHTML='<div style="text-align:center;padding:28px;color:var(--text-mid);font-size:13px">✅ All items are sufficiently stocked</div>';
+    } else {
+      lstbl.innerHTML=`<table class="ls-tbl">
+        <thead><tr><th>Product</th><th>Category</th><th class="nr">Stock</th><th class="nr">Reorder At</th><th>Status</th></tr></thead>
+        <tbody>${lowStockItems.slice(0,6).map(p=>`<tr>
+          <td style="font-weight:600">${esc(p.name)}</td>
+          <td style="color:var(--text-mid)">${esc(p.category||'—')}</td>
+          <td class="nr">${p.qty}</td>
+          <td class="nr">${p.ro}</td>
+          <td><span class="badge ${badgeCls(p.status)}">${p.status}</span></td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+    }
+  }
+
+  // Recent activities from movements
+  const actEl=document.getElementById('dash-activities');
+  if(actEl){
+    const acts=[...movements].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).slice(0,6);
+    if(!acts.length){
+      actEl.innerHTML='<div style="text-align:center;padding:24px;color:var(--text-mid);font-size:13px">No activities yet — log a movement to get started</div>';
+    } else {
+      const iconMap={Sale:'🛒',Purchase:'📦',Adjustment:'🔧',Return:'↩',Restock:'📥',Transfer:'↕'};
+      const bgMap={Sale:'#DCFCE7',Purchase:'#EBF4FF',Adjustment:'#FEF9C3',Return:'#FFF1F2',Restock:'#F0F9FF',Transfer:'#F3E8FF'};
+      actEl.innerHTML=acts.map(m=>{
+        const icon=iconMap[m.type]||'📋';
+        const bg=bgMap[m.type]||'#F0F4F8';
+        const prod=allProducts.find(p=>p.id===m.productId||p.sku===m.sku);
+        const prodName=prod?prod.name:(m.sku||'Item');
+        const verb=m.type==='Sale'?'Sold':(m.type==='Purchase'||m.type==='Restock')?'Added':'Updated';
+        const dl=m.date?new Date(m.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+        return `<div class="activity-row">
+          <div class="act-icon" style="background:${bg}">${icon}</div>
+          <div class="act-text">${verb} <strong>${m.qty||''}</strong> units of <strong>${esc(prodName)}</strong></div>
+          <div class="act-date">${dl}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+function drawDonut(inStock,lowStock,outOfStock,total){
+  const canvas=document.getElementById('donut-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const SIZE=140;
+  canvas.width=SIZE*dpr;canvas.height=SIZE*dpr;
+  canvas.style.width=SIZE+'px';canvas.style.height=SIZE+'px';
+  ctx.scale(dpr,dpr);ctx.clearRect(0,0,SIZE,SIZE);
+  const cx=SIZE/2,cy=SIZE/2,r=58,inner=36;
+  const slices=[
+    {v:inStock,color:'#4ADE80',label:'In Stock'},
+    {v:lowStock,color:'#FBBF24',label:'Low Stock'},
+    {v:outOfStock,color:'#F87171',label:'Out of Stock'},
+  ];
+  if(total===0){
+    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle='#E5E7EB';ctx.fill();
+    ctx.beginPath();ctx.arc(cx,cy,inner,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+  } else {
+    let start=-Math.PI/2;
+    slices.forEach(s=>{
+      if(!s.v)return;
+      const angle=(s.v/total)*Math.PI*2;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+angle);ctx.closePath();
+      ctx.fillStyle=s.color;ctx.fill();
+      start+=angle;
+    });
+    ctx.beginPath();ctx.arc(cx,cy,inner,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+    ctx.fillStyle='#2C2C2C';ctx.font=`bold 20px Segoe UI,Arial`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(total,cx,cy-7);
+    ctx.fillStyle='#999';ctx.font=`500 11px Segoe UI,Arial`;ctx.fillText('Total',cx,cy+11);
+  }
+  const leg=document.getElementById('donut-legend');
+  if(leg){
+    leg.innerHTML=slices.map(s=>{
+      const p=total>0?((s.v/total)*100).toFixed(1):'0.0';
+      return `<div class="donut-legend-item">
+        <div class="donut-legend-left"><div class="donut-dot" style="background:${s.color}"></div><span>${s.label}</span></div>
+        <div class="donut-legend-right">${s.v} (${p}%)</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function toggleExportPanel(){
+  const p=document.getElementById('sb-export-panel');
+  if(p) p.style.display=p.style.display==='none'?'block':'none';
 }
 
 function drawChart(products){
@@ -1578,12 +1661,10 @@ function drawChart(products){
   canvas.width=W*dpr;canvas.height=H*dpr;
   canvas.style.width=W+'px';canvas.style.height=H+'px';
   ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
-  const maxBars=W<400?4:W<560?5:8;
-  const fontSize=W<400?11:W<560?12:14;
-  const labelH=W<400?56:W<560?64:80;
-  const top=[...products].sort((a,b)=>b.totalProfit-a.totalProfit).slice(0,maxBars).filter(p=>p.qty>0||p.totalProfit!==0||p.status==='Out of Stock');
+  const top=[...products].sort((a,b)=>b.totalProfit-a.totalProfit).slice(0,8).filter(p=>p.qty>0||p.totalProfit!==0||p.status==='Out of Stock');
   if(!top.length){ctx.fillStyle='#aaa';ctx.font='13px Segoe UI';ctx.textAlign='center';ctx.fillText('Add products to see chart',W/2,H/2);return;}
   const maxV=Math.max(...top.map(p=>Math.abs(p.totalProfit)),1);
+  const labelH=80;
   const pad={t:10,b:labelH,l:8,r:8};
   const ch=H-pad.t-pad.b;
   const bw=Math.floor((W-pad.l-pad.r)/top.length);
@@ -1626,8 +1707,9 @@ function drawChart(products){
     }
     ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;
     // label — wrap to fit bar width, centered below bar
-    const lineH=fontSize+4;
-    const lines=wrapText(p.name, bwi+gap-4, fontSize);
+    const fontSize=14;
+    const lineH=18;
+    const lines=wrapText(p.name, bwi+gap-4, 14);
     ctx.fillStyle='#444';
     ctx.font=`600 ${fontSize}px Segoe UI,Arial,sans-serif`;
     ctx.textAlign='center';
@@ -1859,10 +1941,10 @@ function applyColState(){
 }
 
 // ─── Init ──────────────────────────────────────────────────────────────────
-new ResizeObserver(()=>{
+window.addEventListener('resize',()=>{
   if(document.getElementById('page-dashboard').classList.contains('active'))
     drawChart(loadP().map(enrich));
-}).observe(document.getElementById('chart-canvas').parentElement);
+});
 
 // On mobile, auto-collapse secondary cols if user has never set a preference
 function applyMobileColDefaults(){
