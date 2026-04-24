@@ -113,7 +113,11 @@ body{font-family:'Segoe UI',Calibri,Arial,sans-serif;background:var(--app-bg);co
 /* ── STAT CARDS ── */
 .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
 @media(max-width:1100px){.stats-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  /* Lone last card in a 2-col grid spans both columns */
+  .stats-grid .stat-card:last-child:nth-child(odd){grid-column:1/-1}
+}
 .stat-card{background:var(--card-bg);border-radius:var(--radius);padding:22px 22px 18px;box-shadow:var(--shadow)}
 .stat-number{font-size:32px;font-weight:700;line-height:1;margin-bottom:8px}
 .stat-number.blue{color:var(--chart-blue)}
@@ -400,6 +404,7 @@ thead th{position:sticky;top:0;z-index:3}
   .greeting-line{font-size:26px}
   .greeting-sub{font-size:13px}
 
+
   /* Prevent iOS auto-zoom on inputs (must be ≥16px) */
   .fi input,.fi select,.search,.fsel,input,select{font-size:16px !important}
 
@@ -478,11 +483,19 @@ thead th{position:sticky;top:0;z-index:3}
   .greeting-line{font-size:22px}
   .cta-row{grid-template-columns:1fr}
   .summary-grid{grid-template-columns:1fr 1fr}
-  .stat-card{padding:16px 14px 14px}
-  .stat-number{font-size:26px}
+  /* Tighter stat cards */
+  .stat-card{padding:14px 12px 12px}
+  .stat-number{font-size:24px;margin-bottom:4px}
+  .stat-label{font-size:12px}
+  .stat-sub{font-size:11px}
   /* Full-bleed table card on tiny screens — right margin clears the FAB (right:18px, width:52px = 70px from edge) */
   .tbl-card{border-radius:0;margin-left:-14px;margin-right:-14px}
   .page-title{font-size:19px}
+  /* Data safety card: stack and fill full width */
+  .data-safety-card{flex-direction:column;gap:10px;padding:14px}
+  .data-safety-btns{flex-direction:column;width:100%}
+  .ds-save-btn{width:100%;justify-content:center}
+  .ds-restore-btn{width:100%;text-align:center;display:block}
 }
 
 /* ── DATA SAFETY CARD ── */
@@ -512,12 +525,6 @@ thead th{position:sticky;top:0;z-index:3}
 .sb-restore-main-btn:hover{background:#DCFCE7}
 .sb-backup-last{font-size:11px;color:var(--text-mid);text-align:center;margin-top:8px}
 
-/* Keep FAB from overlapping content on mobile */
-@media(max-width:900px){
-  .content{padding-right:80px}
-  .tbl-card{margin-right:0}
-  .tbl-wrap{padding-right:0}
-}
 
 /* ── FLOATING ACTION BUTTON ── */
 .fab{display:none;position:fixed;bottom:76px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--chart-blue);color:#fff;border:none;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 4px 16px rgba(91,153,217,.5);z-index:150;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent}
@@ -551,6 +558,37 @@ thead th{position:sticky;top:0;z-index:3}
 .sb-switch-btn{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:8px;background:#EBF4FF;color:#2563EB;border:1.5px solid #BFDBFE;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:6px;width:100%;transition:all .15s;text-align:left}
 .sb-switch-btn:hover{background:#DBEAFE}
 .sb-switch-btn:last-child{margin-bottom:0}
+
+/* ── DASHBOARD MOBILE OVERRIDES (must come after base dash styles) ── */
+@media(max-width:900px){
+  .dash-header{margin-bottom:16px;gap:8px}
+  .dash-title{font-size:20px}
+  .dash-sub{font-size:12px;margin-top:3px}
+  .dash-date-pill{display:none}
+  .dash-filters{width:100%}
+  .dash-filters .fsel{width:100%}
+}
+
+/* ── MOBILE TABLE COLUMN HIDING ── */
+@media(max-width:700px){
+  /* Profit table: hide secondary columns, keep Product/Profit/Qty/Total/Margin */
+  .pf-2nd{display:none}
+  /* Low stock dashboard table: hide category + status columns */
+  .ls-hide-mob{display:none}
+}
+
+/* ── MOBILE BUTTON ROW LAYOUT ── */
+@media(max-width:480px){
+  /* Products/Movements btn-row: primary action full-width, secondaries side-by-side */
+  .btn-row{display:grid;grid-template-columns:1fr 1fr}
+  .btn-row .btn-primary{grid-column:1/-1}
+
+  /* Donut chart: smaller canvas + tighter legend so "Out of Stock" fits on one line */
+  #donut-canvas{width:110px !important;height:110px !important}
+  .donut-legend{min-width:160px}
+  .donut-legend-item{font-size:12px;margin-bottom:10px}
+  .donut-legend-left{white-space:nowrap}
+}
 </style>
 </head>
 <body>
@@ -914,8 +952,8 @@ thead th{position:sticky;top:0;z-index:3}
       <div class="tbl-card">
         <div class="tbl-wrap">
           <table><thead><tr>
-            <th class="no-sort" id="th-profit-item">Product</th><th class="no-sort" id="th-profit-cat">Category</th>
-            <th class="no-sort nr">Base Cost</th><th class="no-sort nr">Total Cost/Unit</th><th class="no-sort nr">Sale Price</th>
+            <th class="no-sort" id="th-profit-item">Product</th><th class="no-sort pf-2nd" id="th-profit-cat">Category</th>
+            <th class="no-sort nr pf-2nd">Base Cost</th><th class="no-sort nr pf-2nd">Total Cost/Unit</th><th class="no-sort nr pf-2nd">Sale Price</th>
             <th class="no-sort nr">Profit/Unit</th><th class="no-sort nr">Qty</th>
             <th class="no-sort nr">Total Profit</th><th class="no-sort nr">Margin</th>
           </tr></thead>
@@ -1367,7 +1405,7 @@ function switchPage(name){
   if(mb) mb.innerHTML=`📋 ${labels[name]||C.appName}`;
   // FAB: show on dashboard & inventory, hide on others
   const fab=document.getElementById('fab');
-  if(fab) fab.style.display=(name==='dashboard'||name==='inventory')?'flex':'none';
+  if(fab) fab.style.display=(name==='inventory')?'flex':'none';
   closeSidebar();
   window.scrollTo({top:0,behavior:'smooth'});
   const renders={dashboard:renderDashboard,inventory:renderInventory,movements:renderMovements,profit:renderProfit};
@@ -1679,13 +1717,13 @@ function renderDashboard(){
       lstbl.innerHTML='<div style="text-align:center;padding:28px;color:var(--text-mid);font-size:13px">✅ All items are sufficiently stocked</div>';
     } else {
       lstbl.innerHTML=`<table class="ls-tbl">
-        <thead><tr><th>Product</th><th>Category</th><th class="nr">Stock</th><th class="nr">Reorder At</th><th>Status</th></tr></thead>
+        <thead><tr><th>Product</th><th class="ls-hide-mob">Category</th><th class="nr">Stock</th><th class="nr">Reorder At</th><th class="ls-hide-mob">Status</th></tr></thead>
         <tbody>${lowStockItems.slice(0,6).map(p=>`<tr>
-          <td style="font-weight:600">${esc(p.name)}</td>
-          <td style="color:var(--text-mid)">${esc(p.category||'—')}</td>
+          <td style="font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</td>
+          <td class="ls-hide-mob" style="color:var(--text-mid)">${esc(p.category||'—')}</td>
           <td class="nr">${p.qty}</td>
           <td class="nr">${p.ro}</td>
-          <td><span class="badge ${badgeCls(p.status)}">${p.status}</span></td>
+          <td class="ls-hide-mob"><span class="badge ${badgeCls(p.status)}">${p.status}</span></td>
         </tr>`).join('')}</tbody>
       </table>`;
     }
@@ -1943,10 +1981,10 @@ function renderProfit(){
     const m=p.sale>0?p.profitUnit/p.sale:0;
     return`<tr class="${rowCls(p.status)}">
       <td style="font-weight:600">${esc(p.name)}${p.isAdvanced?` <span style="font-size:10px;color:#6B50B8;font-weight:600">⬡</span>`:''}</td>
-      <td>${esc(p.category||'—')}</td>
-      <td class="nr" style="color:var(--text-mid)">${$f(p.cost)}</td>
-      <td class="nr" style="color:var(--text-mid)">${$f(p.totalCost)}${p.isAdvanced?`<br><span style="font-size:10px;color:#6B50B8">+mat/labor/fees</span>`:''}</td>
-      <td class="nr">${$f(p.sale)}</td>
+      <td class="pf-2nd">${esc(p.category||'—')}</td>
+      <td class="nr pf-2nd" style="color:var(--text-mid)">${$f(p.cost)}</td>
+      <td class="nr pf-2nd" style="color:var(--text-mid)">${$f(p.totalCost)}${p.isAdvanced?`<br><span style="font-size:10px;color:#6B50B8">+mat/labor/fees</span>`:''}</td>
+      <td class="nr pf-2nd">${$f(p.sale)}</td>
       <td class="nr" style="font-weight:700;color:${p.profitUnit>=0?'var(--green-text)':'var(--red-text)'}">${$f(p.profitUnit)}</td>
       <td class="nr">${num(p.qty)}</td>
       <td class="nr" style="font-weight:700;color:${p.totalProfit>=0?'var(--green-text)':'var(--red-text)'}">${$f(p.totalProfit)}</td>
@@ -2113,6 +2151,9 @@ function applyMobileColDefaults(){
   const firstTime=!localStorage.getItem('inv_ob')&&!hasData;
   document.getElementById('ob').style.display=firstTime?'flex':'none';
   document.getElementById('ob-hint').style.display=firstTime?'none':'none'; // shown after sample load
+  // App starts on dashboard — hide FAB (only shown on inventory page)
+  const fab=document.getElementById('fab');
+  if(fab) fab.style.display='none';
   renderDashboard();
 })();
 </script>
