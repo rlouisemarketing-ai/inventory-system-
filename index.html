@@ -68,7 +68,7 @@ body{font-family:'Segoe UI',Calibri,Arial,sans-serif;background:var(--app-bg);co
 .sb-privacy-text{font-size:10px;color:#4A7A40;line-height:1.45;font-weight:500}
 
 /* ── MAIN CONTENT ── */
-.content{margin-left:var(--sidebar-w);flex:1;padding:36px 36px 60px;min-height:100vh}
+.content{margin-left:var(--sidebar-w);flex:1;min-width:0;padding:36px 36px 60px;min-height:100vh}
 @media(max-width:900px){
   .content{margin-left:0;padding:20px 16px 60px}
   .sidebar{transform:translateX(-100%)}
@@ -480,9 +480,16 @@ thead th{position:sticky;top:0;z-index:3}
   .summary-grid{grid-template-columns:1fr 1fr}
   .stat-card{padding:16px 14px 14px}
   .stat-number{font-size:26px}
-  /* Full-bleed table card on tiny screens */
+  /* Full-bleed table card on tiny screens — right margin clears the FAB (right:18px, width:52px = 70px from edge) */
   .tbl-card{border-radius:0;margin-left:-14px;margin-right:-14px}
   .page-title{font-size:19px}
+}
+
+/* Keep FAB from overlapping content on mobile */
+@media(max-width:900px){
+  .content{padding-right:80px}
+  .tbl-card{margin-right:0}
+  .tbl-wrap{padding-right:0}
 }
 
 /* ── FLOATING ACTION BUTTON ── */
