@@ -1414,7 +1414,7 @@ function switchPage(name){
 }
 
 // ─── Onboarding ────────────────────────────────────────────────────────────
-function dismissOB(){document.getElementById('ob').style.display='none';localStorage.setItem('inv_ob','1');}
+function dismissOB(){document.getElementById('ob').style.display='none';localStorage.setItem('inv_ob_v2','1');}
 function previewOnboarding(){closeSidebar();document.getElementById('ob').style.display='flex';}
 function openSettings(){
   const def=localStorage.getItem('inv_reorder_default')||'';
@@ -1436,7 +1436,7 @@ function loadSampleData(){
   }
   saveP(SAMPLE_PRODUCTS.map(p=>({...p,id:uid()})));
   saveM([]);
-  localStorage.removeItem('inv_ob');
+  localStorage.removeItem('inv_ob_v2');
   document.getElementById('ob-hint').style.display='flex';
   renderDashboard();
   if(document.getElementById('page-inventory').classList.contains('active')) renderInventory();
@@ -1448,7 +1448,7 @@ function loadSampleData(){
 function clearData(){
   if(!window.confirm('Clear all inventory data?\n\nThis cannot be undone. Consider saving a backup first.')) return;
   saveP([]);saveM([]);
-  localStorage.removeItem('inv_ob');
+  localStorage.removeItem('inv_ob_v2');
   document.getElementById('ob-hint').style.display='none';
   renderDashboard();
   if(document.getElementById('page-inventory').classList.contains('active')) renderInventory();
@@ -2150,10 +2150,10 @@ function applyMobileColDefaults(){
   applyMobileColDefaults();
   applyColState();
   // Show Quick Start Guide on first open only (flag-based, not data-based)
-  const firstTime=!localStorage.getItem('inv_ob');
+  const firstTime=!localStorage.getItem('inv_ob_v2');
   document.getElementById('ob').style.display=firstTime?'flex':'none';
   // Mark as seen immediately so closing the browser won't re-show it next visit
-  if(firstTime) localStorage.setItem('inv_ob','1');
+  if(firstTime) localStorage.setItem('inv_ob_v2','1');
   document.getElementById('ob-hint').style.display='none';
   // App starts on dashboard — hide FAB (only shown on inventory page)
   const fab=document.getElementById('fab');
