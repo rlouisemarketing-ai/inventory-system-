@@ -485,6 +485,33 @@ thead th{position:sticky;top:0;z-index:3}
   .page-title{font-size:19px}
 }
 
+/* ── DATA SAFETY CARD ── */
+.data-safety-card{background:linear-gradient(135deg,#FFFBEB 0%,#FEF3C7 100%);border:2px solid #FCD34D;border-radius:var(--radius);padding:18px 20px;margin-bottom:24px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.data-safety-card.backed-up{background:linear-gradient(135deg,#F0FDF4 0%,#DCFCE7 100%);border-color:#86EFAC}
+.data-safety-icon{font-size:26px;flex-shrink:0;margin-top:2px}
+.data-safety-body{flex:1;min-width:160px}
+.data-safety-title{font-size:14px;font-weight:700;color:#92400E;margin-bottom:4px}
+.data-safety-card.backed-up .data-safety-title{color:#166534}
+.data-safety-sub{font-size:12px;color:#78350F;line-height:1.5}
+.data-safety-card.backed-up .data-safety-sub{color:#15803D}
+.data-safety-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:2px}
+.ds-save-btn{background:#F59E0B;color:#fff;border:none;border-radius:9px;padding:11px 20px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .15s;white-space:nowrap;box-shadow:0 2px 8px rgba(245,158,11,.35)}
+.ds-save-btn:hover{background:#D97706}
+.data-safety-card.backed-up .ds-save-btn{background:#16A34A;box-shadow:0 2px 8px rgba(22,163,74,.3)}
+.data-safety-card.backed-up .ds-save-btn:hover{background:#15803D}
+.ds-restore-btn{background:#fff;color:#78350F;border:1.5px solid #FCD34D;border-radius:9px;padding:10px 16px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}
+.ds-restore-btn:hover{background:#FEF9C3}
+.data-safety-card.backed-up .ds-restore-btn{color:#166534;border-color:#86EFAC}
+
+/* ── SIDEBAR BACKUP SECTION ── */
+.sb-backup-section{padding:12px 14px;border-top:2px solid #E8EDF4;background:#F8FBFF}
+.sb-backup-title{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:10px}
+.sb-backup-main-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 16px;background:#2563EB;color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;transition:background .15s;box-shadow:0 2px 8px rgba(37,99,235,.25)}
+.sb-backup-main-btn:hover{background:#1D4ED8}
+.sb-restore-main-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 16px;background:#F0FDF4;color:#166534;border:1.5px solid #86EFAC;border-radius:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.sb-restore-main-btn:hover{background:#DCFCE7}
+.sb-backup-last{font-size:11px;color:var(--text-mid);text-align:center;margin-top:8px}
+
 /* Keep FAB from overlapping content on mobile */
 @media(max-width:900px){
   .content{padding-right:80px}
@@ -620,15 +647,22 @@ thead th{position:sticky;top:0;z-index:3}
       </div>
     </nav>
 
-    <!-- Export panel (hidden by default) -->
-    <div id="sb-export-panel" style="display:none;padding:0 12px 10px;border-bottom:1px solid #E8EDF4">
+    <!-- Backup section — always visible -->
+    <div class="sb-backup-section">
+      <div class="sb-backup-title">💾 Your Data</div>
+      <button class="sb-backup-main-btn" onclick="backupData()">💾 Save Backup</button>
+      <label class="sb-restore-main-btn" style="cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        ↩ Restore from Backup
+        <input type="file" accept=".json" style="display:none" onchange="restoreData(event)">
+      </label>
+      <div class="sb-backup-last" id="sb-backup-last">No backup saved yet</div>
+    </div>
+
+    <!-- Additional tools panel -->
+    <div style="padding:0 12px 10px;border-bottom:1px solid #E8EDF4">
       <div class="sb-action-row">
         <button class="sb-action-btn" onclick="exportCSV()">↓ CSV Export</button>
         <label class="sb-action-btn" style="cursor:pointer">↑ CSV Import<input type="file" accept=".csv" style="display:none" onchange="importCSV(event)"></label>
-      </div>
-      <div class="sb-action-row" style="margin-top:6px">
-        <button class="sb-action-btn sb-backup-btn" onclick="backupData()">☁ Save Backup</button>
-        <label class="sb-action-btn sb-restore-btn" style="cursor:pointer">↩ Restore<input type="file" accept=".json" style="display:none" onchange="restoreData(event)"></label>
       </div>
       <div class="sb-action-row" style="margin-top:6px">
         <button class="sb-action-btn" style="flex:1;background:#F0FDF4;color:#16A34A;border-color:#BBF7D0" onclick="loadSampleData()">📦 Load Sample Data</button>
@@ -715,6 +749,19 @@ thead th{position:sticky;top:0;z-index:3}
           <div class="stat-label" style="color:var(--green-text)">Total Profit</div>
           <div class="stat-number green" id="d-total-profit">—</div>
           <div class="stat-sub">Total profit</div>
+        </div>
+      </div>
+
+      <!-- ── DATA SAFETY CARD ── -->
+      <div id="data-safety-card" class="data-safety-card">
+        <div class="data-safety-icon" id="ds-icon">💾</div>
+        <div class="data-safety-body">
+          <div class="data-safety-title" id="ds-title">Your data is only saved on this device</div>
+          <div class="data-safety-sub" id="ds-sub">Save a backup file so you don't lose your inventory if you clear your browser or switch devices.</div>
+        </div>
+        <div class="data-safety-btns">
+          <button class="ds-save-btn" onclick="backupData()">💾 Save Backup Now</button>
+          <label class="ds-restore-btn" style="cursor:pointer">↩ Restore from Backup<input type="file" accept=".json" style="display:none" onchange="restoreData(event)"></label>
         </div>
       </div>
 
@@ -1483,6 +1530,11 @@ function saveProduct(){
   else products.push(p);
   saveP(products);closeModal('modal-product');
   renderInventory();renderDashboard();
+  // Nudge user to back up after their 3rd+ product if they've never backed up
+  const allProds=loadP();
+  if(!editPid && allProds.length>=3 && !localStorage.getItem('inv_last_backup')){
+    showToast('💾','Tip: Save a backup so you never lose your data!');
+  }
 }
 function deleteProduct(id){
   confirm2('Delete this '+C.item.toLowerCase()+'? This cannot be undone.',()=>{saveP(loadP().filter(p=>p.id!==id));renderInventory();renderDashboard();});
@@ -1562,6 +1614,7 @@ function deleteMovement(id){confirm2('Delete this movement record?',()=>{saveM(l
 
 // ─── Dashboard ─────────────────────────────────────────────────────────────
 function renderDashboard(){
+  updateBackupCard();
   const allProducts=loadP().map(enrich);
   const movements=loadM();
 
@@ -1957,7 +2010,34 @@ function backupData(){
   a.download=`inventory-backup-${date}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
-  showToast('✅','Backup saved');
+  localStorage.setItem('inv_last_backup',new Date().toISOString());
+  updateBackupCard();
+  showToast('✅','Backup saved! Keep this file somewhere safe.');
+}
+function updateBackupCard(){
+  const ts=localStorage.getItem('inv_last_backup');
+  const card=document.getElementById('data-safety-card');
+  const icon=document.getElementById('ds-icon');
+  const title=document.getElementById('ds-title');
+  const sub=document.getElementById('ds-sub');
+  const sbLast=document.getElementById('sb-backup-last');
+  if(ts){
+    const d=new Date(ts);
+    const dateStr=d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+    const timeStr=d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+    const label=`Last backed up ${dateStr} at ${timeStr}`;
+    if(card){card.classList.add('backed-up');}
+    if(icon) icon.textContent='✅';
+    if(title) title.textContent='Your backup is up to date';
+    if(sub) sub.textContent=label+'. Save a new backup anytime your inventory changes.';
+    if(sbLast) sbLast.textContent=label;
+  } else {
+    if(card){card.classList.remove('backed-up');}
+    if(icon) icon.textContent='💾';
+    if(title) title.textContent='Your data is only saved on this device';
+    if(sub) sub.textContent='Save a backup file so you don\'t lose your inventory if you clear your browser or switch devices.';
+    if(sbLast) sbLast.textContent='No backup saved yet';
+  }
 }
 function restoreData(e){
   const file=e.target.files[0];if(!file)return;
@@ -1966,14 +2046,15 @@ function restoreData(e){
     try{
       const payload=JSON.parse(ev.target.result);
       if(!payload.products||!Array.isArray(payload.products))throw new Error('Invalid backup file.');
-      if(!window.confirm(`Restore ${payload.products.length} ${C.items.toLowerCase()} and ${(payload.movements||[]).length} movements?\n\nThis will replace your current data.`))return;
-      saveP(payload.products);
-      saveM(payload.movements||[]);
-      renderDashboard();
-      if(document.getElementById('page-inventory').classList.contains('active'))renderInventory();
-      if(document.getElementById('page-movements').classList.contains('active'))renderMovements();
-      if(document.getElementById('page-profit').classList.contains('active'))renderProfit();
-      showToast('🎉','Data restored successfully');
+      confirm2(`Restore ${payload.products.length} ${C.items.toLowerCase()} and ${(payload.movements||[]).length} movements? This will replace your current data.`,()=>{
+        saveP(payload.products);
+        saveM(payload.movements||[]);
+        renderDashboard();
+        if(document.getElementById('page-inventory').classList.contains('active'))renderInventory();
+        if(document.getElementById('page-movements').classList.contains('active'))renderMovements();
+        if(document.getElementById('page-profit').classList.contains('active'))renderProfit();
+        showToast('🎉','Data restored successfully!');
+      });
     }catch(err){
       alert('Could not read backup file. Please make sure it\'s a valid inventory backup.');
     }
