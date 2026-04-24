@@ -605,6 +605,9 @@ thead th{position:sticky;top:0;z-index:3}
           <span class="sb-icon">💾</span> Export &amp; Backup
         </div>
         <div class="sb-item" onclick="previewOnboarding()">
+          <span class="sb-icon">📖</span> Quick Start Guide
+        </div>
+        <div class="sb-item" onclick="openSettings()">
           <span class="sb-icon">⚙</span> Settings
         </div>
       </div>
@@ -973,6 +976,44 @@ thead th{position:sticky;top:0;z-index:3}
   </div>
 </div>
 
+<!-- SETTINGS MODAL -->
+<div class="modal-wrap" id="modal-settings">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head">
+      <span>⚙ Settings</span>
+      <button class="icon-btn" onclick="closeModal('modal-settings')" style="font-size:18px;color:var(--text-mid)">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:18px">
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--text-mid);text-transform:uppercase;margin-bottom:10px">Data</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn" style="background:#EBF4FF;color:#2563EB;border:1px solid #BFDBFE;justify-content:flex-start;gap:8px" onclick="closeModal('modal-settings');loadSampleData()">📦 Load Sample Data</button>
+          <button class="btn" style="background:#FFF0F0;color:#8B1A1A;border:1px solid #F5C0C0;justify-content:flex-start;gap:8px" onclick="closeModal('modal-settings');clearData()">🗑 Clear All Data</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--text-mid);text-transform:uppercase;margin-bottom:10px">Low Stock Threshold</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="number" id="settings-reorder-default" min="0" placeholder="e.g. 10" style="flex:1;padding:10px 12px;border:1.5px solid var(--gray);border-radius:10px;font-size:14px;background:var(--card-bg);color:var(--text)">
+          <button class="btn btn-primary" style="white-space:nowrap" onclick="saveReorderDefault()">Save</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-mid);margin-top:6px">Default reorder threshold applied to new products.</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--text-mid);text-transform:uppercase;margin-bottom:10px">About</div>
+        <div style="font-size:13px;color:var(--text-mid);line-height:1.6">
+          Inventory Control Dashboard<br>
+          All data is stored locally on your device — nothing is sent online.<br>
+          <span style="color:var(--text-light)">Version 1.0</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-settings')">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
 // ─── NICHE CONFIG ──────────────────────────────────────────────────────────
@@ -1281,7 +1322,17 @@ function switchPage(name){
 
 // ─── Onboarding ────────────────────────────────────────────────────────────
 function dismissOB(){document.getElementById('ob').style.display='none';localStorage.setItem('inv_ob','1');}
-function previewOnboarding(){document.getElementById('ob').style.display='flex';}
+function previewOnboarding(){closeSidebar();document.getElementById('ob').style.display='flex';}
+function openSettings(){
+  const def=localStorage.getItem('inv_reorder_default')||'';
+  document.getElementById('settings-reorder-default').value=def;
+  openModal('modal-settings');
+}
+function saveReorderDefault(){
+  const v=parseInt(document.getElementById('settings-reorder-default').value);
+  if(!isNaN(v)&&v>=0){localStorage.setItem('inv_reorder_default',v);showToast('✅','Default threshold saved');}
+  closeModal('modal-settings');
+}
 
 // Sample products come from the active niche config
 const SAMPLE_PRODUCTS = C.sampleItems.map(p=>({...p,id:uid(),createdAt:new Date().toISOString()}));
