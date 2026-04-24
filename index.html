@@ -593,7 +593,7 @@ thead th{position:sticky;top:0;z-index:3}
 </head>
 <body>
 
-<!-- ONBOARDING -->
+<!-- ONBOARDING / QUICK START GUIDE -->
 <div class="ob-wrap" id="ob">
   <div class="ob">
     <div class="ob-head">
@@ -602,10 +602,11 @@ thead th{position:sticky;top:0;z-index:3}
       <div class="ob-tag" id="ob-app-tag">Stock · Profit · Restock — all in one place</div>
     </div>
     <div class="ob-body">
-      <div class="ob-step"><div class="ob-num">1</div><div class="ob-sc"><div class="ob-st">Go to Products</div><div class="ob-sd">Add and manage your inventory from the sidebar.</div></div></div>
-      <div class="ob-step"><div class="ob-num">2</div><div class="ob-sc"><div class="ob-st">Choose Simple or Advanced Mode</div><div class="ob-sd">Simple tracks cost, price, and qty. Advanced adds material, labor, and fee breakdowns.</div></div></div>
-      <div class="ob-step"><div class="ob-num">3</div><div class="ob-sc"><div class="ob-st">Monitor highlighted rows</div><div class="ob-sd">Low and out-of-stock items are flagged automatically on the Dashboard.</div></div></div>
-      <div class="ob-protip"><span class="ob-protip-icon">💡</span><span class="ob-protip-text">Enter your product details below. Everything calculates automatically.</span></div>
+      <div class="ob-step"><div class="ob-num">1</div><div class="ob-sc"><div class="ob-st">Navigate your inventory</div><div class="ob-sd">On mobile, use the bottom tabs (Dashboard, Products, Stock, Profit). On desktop, use the left sidebar.</div></div></div>
+      <div class="ob-step"><div class="ob-num">2</div><div class="ob-sc"><div class="ob-st">Add your products</div><div class="ob-sd">Go to Products → tap "+ Add Product". Choose Simple Mode for basic tracking or Advanced Mode for material, labor &amp; fee breakdowns.</div></div></div>
+      <div class="ob-step"><div class="ob-num">3</div><div class="ob-sc"><div class="ob-st">Track stock movements</div><div class="ob-sd">Use the Stock tab to log sales, arrivals, returns, and adjustments. Quantities update automatically.</div></div></div>
+      <div class="ob-step"><div class="ob-num">4</div><div class="ob-sc"><div class="ob-st">Back up your data</div><div class="ob-sd">Your data is stored only on this device. Tap "💾 Save Backup Now" on the Dashboard regularly to protect it.</div></div></div>
+      <div class="ob-protip"><span class="ob-protip-icon">🔒</span><span class="ob-protip-text">100% private — nothing is sent online. Your inventory stays on your device only. Back up often!</span></div>
     </div>
     <div class="ob-foot">
       <button class="ob-cta ob-cta-sample" onclick="loadSampleData();dismissOB()">📦 Load Sample Data — see it in action</button>
@@ -2148,9 +2149,12 @@ function applyMobileColDefaults(){
   }
   applyMobileColDefaults();
   applyColState();
-  const firstTime=!localStorage.getItem('inv_ob')&&!hasData;
+  // Show Quick Start Guide on first open only (flag-based, not data-based)
+  const firstTime=!localStorage.getItem('inv_ob');
   document.getElementById('ob').style.display=firstTime?'flex':'none';
-  document.getElementById('ob-hint').style.display=firstTime?'none':'none'; // shown after sample load
+  // Mark as seen immediately so closing the browser won't re-show it next visit
+  if(firstTime) localStorage.setItem('inv_ob','1');
+  document.getElementById('ob-hint').style.display='none';
   // App starts on dashboard — hide FAB (only shown on inventory page)
   const fab=document.getElementById('fab');
   if(fab) fab.style.display='none';
