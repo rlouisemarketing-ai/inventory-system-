@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "framework": null,
+  "routes": [
+    { "src": "/sw.js", "headers": { "Service-Worker-Allowed": "/" }, "dest": "/sw.js" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}

@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="page-title">Inventory Control Dashboard</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#2C5282">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Inventory">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <style>
 :root {
   --blue-bg:    #E8F0F7;
@@ -113,7 +119,11 @@ body{font-family:'Segoe UI',Calibri,Arial,sans-serif;background:var(--app-bg);co
 /* ── STAT CARDS ── */
 .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
 @media(max-width:1100px){.stats-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  /* Lone last card in a 2-col grid spans both columns */
+  .stats-grid .stat-card:last-child:nth-child(odd){grid-column:1/-1}
+}
 .stat-card{background:var(--card-bg);border-radius:var(--radius);padding:22px 22px 18px;box-shadow:var(--shadow)}
 .stat-number{font-size:32px;font-weight:700;line-height:1;margin-bottom:8px}
 .stat-number.blue{color:var(--chart-blue)}
@@ -255,30 +265,30 @@ tbody tr.status-out-of-stock{background:#FFF0F0}
 
 /* Onboarding */
 .ob-wrap{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
-.ob{background:#fff;max-width:420px;width:100%;border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.18);overflow:hidden}
-.ob-head{background:linear-gradient(135deg,#2C5282 0%,#3A7BD5 100%);padding:28px 28px 22px;text-align:center}
-.ob-logo{font-size:26px;margin-bottom:10px}
-.ob-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.2px;margin-bottom:4px}
-.ob-tag{font-size:12px;color:rgba(255,255,255,.7);letter-spacing:.2px}
-.ob-body{padding:22px 24px 6px}
-.ob-step{display:flex;gap:14px;align-items:center;padding:11px 0;border-bottom:1px solid #F1F5F9}
+.ob{background:#fff;max-width:540px;width:100%;border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.18);max-height:92vh;display:flex;flex-direction:column}
+.ob-head{background:linear-gradient(135deg,#2C5282 0%,#3A7BD5 100%);padding:14px 22px 12px;text-align:center}
+.ob-logo{font-size:24px;margin-bottom:4px}
+.ob-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.2px;margin-bottom:2px}
+.ob-tag{font-size:12px;color:rgba(255,255,255,.9);letter-spacing:.2px}
+.ob-body{padding:8px 18px 2px;overflow-y:auto;flex:1}
+.ob-step{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #E8EDF4}
 .ob-step:last-child{border-bottom:none}
-.ob-num{width:26px;height:26px;background:#EBF4FF;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--chart-blue);flex-shrink:0}
+.ob-num{width:32px;height:32px;background:#EBF4FF;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--chart-blue);flex-shrink:0;margin-top:1px}
 .ob-sc{flex:1}
-.ob-sc .ob-st{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
-.ob-sc .ob-sd{font-size:11.5px;color:var(--text-light);margin-top:2px;line-height:1.45}
-.ob-protip{margin:14px 0 6px;background:#FEFCE8;border:1px solid #FDE68A;border-radius:9px;padding:11px 14px;display:flex;align-items:center;gap:10px}
-.ob-protip-icon{font-size:14px;flex-shrink:0}
-.ob-protip-text{font-size:11.5px;color:#92400E;line-height:1.45}
-.ob-foot{padding:16px 24px 22px}
-.ob-cta{width:100%;padding:13px;background:var(--chart-blue);color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:700;letter-spacing:.1px;cursor:pointer;transition:background .15s}
+.ob-sc .ob-st{font-size:15px !important;font-weight:700 !important;color:#111 !important;line-height:1.3}
+.ob-sc .ob-sd{font-size:13px !important;color:#222 !important;font-weight:500 !important;margin-top:3px;line-height:1.5}
+.ob-protip{margin:8px 0 2px;background:#FEFCE8;border:1px solid #FDE68A;border-radius:9px;padding:8px 12px;display:flex;align-items:center;gap:10px}
+.ob-protip-icon{font-size:15px;flex-shrink:0}
+.ob-protip-text{font-size:12px !important;color:#92400E !important;font-weight:500;line-height:1.4}
+.ob-foot{padding:8px 18px 14px;flex-shrink:0;border-top:1px solid #E8EDF4;background:#fff}
+.ob-cta{width:100%;padding:12px;background:var(--chart-blue);color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.1px;cursor:pointer;transition:background .15s}
 .ob-cta:hover{background:#2F6EB5}
-.ob-cta-sample{background:#fff;color:var(--chart-blue);border:2px solid var(--chart-blue);margin-bottom:8px}
+.ob-cta-sample{background:#fff;color:var(--chart-blue);border:2px solid var(--chart-blue);margin-bottom:7px}
 .ob-cta-sample:hover{background:#EBF4FF}
-.ob-hint{display:flex;align-items:center;gap:10px;background:#EBF4FF;border:1px solid #BDD7F5;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#1A4A7A;font-weight:500;line-height:1.4}
-.ob-hint .hint-icon{font-size:16px;flex-shrink:0}
+.ob-hint{display:flex;align-items:center;gap:10px;background:#EBF4FF;border:1px solid #BDD7F5;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:17px;color:#1A4A7A;font-weight:500;line-height:1.45}
+.ob-hint .hint-icon{font-size:22px;flex-shrink:0}
 .ob-hint .hint-text{flex:1}
-.ob-hint .hint-close{background:none;border:none;color:#5B8FC4;font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;opacity:.7}
+.ob-hint .hint-close{background:none;border:none;color:#5B8FC4;font-size:22px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;opacity:.7}
 .ob-hint .hint-close:hover{opacity:1}
 
 /* Confirm */
@@ -400,6 +410,7 @@ thead th{position:sticky;top:0;z-index:3}
   .greeting-line{font-size:26px}
   .greeting-sub{font-size:13px}
 
+
   /* Prevent iOS auto-zoom on inputs (must be ≥16px) */
   .fi input,.fi select,.search,.fsel,input,select{font-size:16px !important}
 
@@ -478,19 +489,48 @@ thead th{position:sticky;top:0;z-index:3}
   .greeting-line{font-size:22px}
   .cta-row{grid-template-columns:1fr}
   .summary-grid{grid-template-columns:1fr 1fr}
-  .stat-card{padding:16px 14px 14px}
-  .stat-number{font-size:26px}
+  /* Tighter stat cards */
+  .stat-card{padding:14px 12px 12px}
+  .stat-number{font-size:24px;margin-bottom:4px}
+  .stat-label{font-size:12px}
+  .stat-sub{font-size:11px}
   /* Full-bleed table card on tiny screens — right margin clears the FAB (right:18px, width:52px = 70px from edge) */
   .tbl-card{border-radius:0;margin-left:-14px;margin-right:-14px}
   .page-title{font-size:19px}
+  /* Data safety card: stack and fill full width */
+  .data-safety-card{flex-direction:column;gap:10px;padding:14px}
+  .data-safety-btns{flex-direction:column;width:100%}
+  .ds-save-btn{width:100%;justify-content:center}
+  .ds-restore-btn{width:100%;text-align:center;display:block}
 }
 
-/* Keep FAB from overlapping content on mobile */
-@media(max-width:900px){
-  .content{padding-right:80px}
-  .tbl-card{margin-right:0}
-  .tbl-wrap{padding-right:0}
-}
+/* ── DATA SAFETY CARD ── */
+.data-safety-card{background:linear-gradient(135deg,#FFFBEB 0%,#FEF3C7 100%);border:2px solid #FCD34D;border-radius:var(--radius);padding:18px 20px;margin-bottom:24px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.data-safety-card.backed-up{background:linear-gradient(135deg,#F0FDF4 0%,#DCFCE7 100%);border-color:#86EFAC}
+.data-safety-icon{font-size:26px;flex-shrink:0;margin-top:2px}
+.data-safety-body{flex:1;min-width:160px}
+.data-safety-title{font-size:14px;font-weight:700;color:#92400E;margin-bottom:4px}
+.data-safety-card.backed-up .data-safety-title{color:#166534}
+.data-safety-sub{font-size:12px;color:#78350F;line-height:1.5}
+.data-safety-card.backed-up .data-safety-sub{color:#15803D}
+.data-safety-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:2px}
+.ds-save-btn{background:#F59E0B;color:#fff;border:none;border-radius:9px;padding:11px 20px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .15s;white-space:nowrap;box-shadow:0 2px 8px rgba(245,158,11,.35)}
+.ds-save-btn:hover{background:#D97706}
+.data-safety-card.backed-up .ds-save-btn{background:#16A34A;box-shadow:0 2px 8px rgba(22,163,74,.3)}
+.data-safety-card.backed-up .ds-save-btn:hover{background:#15803D}
+.ds-restore-btn{background:#fff;color:#78350F;border:1.5px solid #FCD34D;border-radius:9px;padding:10px 16px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}
+.ds-restore-btn:hover{background:#FEF9C3}
+.data-safety-card.backed-up .ds-restore-btn{color:#166534;border-color:#86EFAC}
+
+/* ── SIDEBAR BACKUP SECTION ── */
+.sb-backup-section{padding:12px 14px;border-top:2px solid #E8EDF4;background:#F8FBFF}
+.sb-backup-title{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);margin-bottom:10px}
+.sb-backup-main-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 16px;background:#2563EB;color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;transition:background .15s;box-shadow:0 2px 8px rgba(37,99,235,.25)}
+.sb-backup-main-btn:hover{background:#1D4ED8}
+.sb-restore-main-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 16px;background:#F0FDF4;color:#166534;border:1.5px solid #86EFAC;border-radius:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.sb-restore-main-btn:hover{background:#DCFCE7}
+.sb-backup-last{font-size:11px;color:var(--text-mid);text-align:center;margin-top:8px}
+
 
 /* ── FLOATING ACTION BUTTON ── */
 .fab{display:none;position:fixed;bottom:76px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--chart-blue);color:#fff;border:none;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 4px 16px rgba(91,153,217,.5);z-index:150;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent}
@@ -524,11 +564,111 @@ thead th{position:sticky;top:0;z-index:3}
 .sb-switch-btn{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:8px;background:#EBF4FF;color:#2563EB;border:1.5px solid #BFDBFE;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:6px;width:100%;transition:all .15s;text-align:left}
 .sb-switch-btn:hover{background:#DBEAFE}
 .sb-switch-btn:last-child{margin-bottom:0}
+
+/* ── DASHBOARD MOBILE OVERRIDES (must come after base dash styles) ── */
+@media(max-width:900px){
+  .dash-header{margin-bottom:16px;gap:8px}
+  .dash-title{font-size:20px}
+  .dash-sub{font-size:12px;margin-top:3px}
+  .dash-date-pill{display:none}
+  .dash-filters{width:100%}
+  .dash-filters .fsel{width:100%}
+}
+
+/* ── MOBILE TABLE COLUMN HIDING ── */
+@media(max-width:700px){
+  /* Profit table: hide secondary columns, keep Product/Profit/Qty/Total/Margin */
+  .pf-2nd{display:none}
+  /* Low stock dashboard table: hide category + status columns */
+  .ls-hide-mob{display:none}
+}
+
+/* ── MOBILE BUTTON ROW LAYOUT ── */
+@media(max-width:480px){
+  /* Products/Movements btn-row: primary action full-width, secondaries side-by-side */
+  .btn-row{display:grid;grid-template-columns:1fr 1fr}
+  .btn-row .btn-primary{grid-column:1/-1}
+
+  /* Donut chart: smaller canvas + tighter legend so "Out of Stock" fits on one line */
+  #donut-canvas{width:110px !important;height:110px !important}
+  .donut-legend{min-width:160px}
+  .donut-legend-item{font-size:12px;margin-bottom:10px}
+  .donut-legend-left{white-space:nowrap}
+}
+
+/* ── PWA INSTALL BANNER ── */
+.pwa-banner{display:none;position:fixed;bottom:60px;left:0;right:0;z-index:500;
+  background:#2C5282;color:#fff;padding:11px 14px;
+  flex-direction:row;align-items:center;gap:12px;
+  box-shadow:0 -3px 18px rgba(44,82,130,.35);animation:slideUp .3s ease}
+@media(min-width:901px){.pwa-banner{bottom:0;left:var(--sidebar-w)}}
+.pwa-banner.show{display:flex}
+.pwa-banner-icon{font-size:26px;flex-shrink:0}
+.pwa-banner-text{flex:1;line-height:1.3}
+.pwa-banner-title{font-weight:700;font-size:14px}
+.pwa-banner-sub{font-size:11.5px;opacity:.85}
+.pwa-banner-btn{background:#fff;color:#2C5282;border:none;border-radius:7px;
+  padding:7px 16px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.pwa-banner-btn:active{opacity:.85}
+.pwa-banner-x{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;
+  padding:0 2px;line-height:1;opacity:.75;flex-shrink:0}
+.pwa-banner-x:hover{opacity:1}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* ── iOS INSTALL MODAL ── */
+.ios-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);
+  z-index:600;align-items:flex-end;justify-content:center}
+.ios-modal-bg.show{display:flex}
+.ios-modal{background:#fff;border-radius:18px 18px 0 0;padding:24px 22px 32px;
+  width:100%;max-width:480px;box-shadow:0 -4px 30px rgba(0,0,0,.2)}
+.ios-modal-title{font-size:17px;font-weight:700;color:#2C5282;margin-bottom:4px;text-align:center}
+.ios-modal-sub{font-size:13px;color:#666;text-align:center;margin-bottom:20px}
+.ios-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.ios-step-num{width:26px;height:26px;border-radius:50%;background:#2C5282;color:#fff;
+  font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ios-step-text{font-size:13.5px;color:#333;line-height:1.45}
+.ios-step-text b{color:#2C5282}
+.ios-modal-arrow{text-align:center;font-size:28px;margin:4px 0 16px;color:#5B99D9}
+.ios-modal-close{width:100%;background:#2C5282;color:#fff;border:none;border-radius:10px;
+  padding:13px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px}
+.ios-modal-close:active{opacity:.85}
 </style>
 </head>
 <body>
 
-<!-- ONBOARDING -->
+<!-- PWA INSTALL BANNER (Android / desktop Chrome) -->
+<div class="pwa-banner" id="pwa-banner">
+  <span class="pwa-banner-icon">📲</span>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Add to Home Screen</div>
+    <div class="pwa-banner-sub">Open the app instantly with one tap</div>
+  </div>
+  <button class="pwa-banner-btn" id="pwa-install-btn">Install</button>
+  <button class="pwa-banner-x" id="pwa-dismiss-btn" aria-label="Dismiss">×</button>
+</div>
+
+<!-- iOS INSTALL MODAL -->
+<div class="ios-modal-bg" id="ios-modal-bg">
+  <div class="ios-modal">
+    <div class="ios-modal-title">📲 Add to Home Screen</div>
+    <div class="ios-modal-sub">Save this app to your home screen for one-tap access</div>
+    <div class="ios-step">
+      <div class="ios-step-num">1</div>
+      <div class="ios-step-text">Tap the <b>Share</b> button <b>⬆</b> at the bottom of Safari</div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-num">2</div>
+      <div class="ios-step-text">Scroll down and tap <b>"Add to Home Screen"</b></div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-num">3</div>
+      <div class="ios-step-text">Tap <b>"Add"</b> in the top-right corner — done!</div>
+    </div>
+    <button class="ios-modal-close" id="ios-modal-close">Got it</button>
+  </div>
+</div>
+
+<!-- ONBOARDING / QUICK START GUIDE -->
 <div class="ob-wrap" id="ob">
   <div class="ob">
     <div class="ob-head">
@@ -537,10 +677,11 @@ thead th{position:sticky;top:0;z-index:3}
       <div class="ob-tag" id="ob-app-tag">Stock · Profit · Restock — all in one place</div>
     </div>
     <div class="ob-body">
-      <div class="ob-step"><div class="ob-num">1</div><div class="ob-sc"><div class="ob-st">Go to Products</div><div class="ob-sd">Add and manage your inventory from the sidebar.</div></div></div>
-      <div class="ob-step"><div class="ob-num">2</div><div class="ob-sc"><div class="ob-st">Choose Simple or Advanced Mode</div><div class="ob-sd">Simple tracks cost, price, and qty. Advanced adds material, labor, and fee breakdowns.</div></div></div>
-      <div class="ob-step"><div class="ob-num">3</div><div class="ob-sc"><div class="ob-st">Monitor highlighted rows</div><div class="ob-sd">Low and out-of-stock items are flagged automatically on the Dashboard.</div></div></div>
-      <div class="ob-protip"><span class="ob-protip-icon">💡</span><span class="ob-protip-text">Enter your product details below. Everything calculates automatically.</span></div>
+      <div class="ob-step"><div class="ob-num">1</div><div class="ob-sc"><div class="ob-st">Navigate your inventory</div><div class="ob-sd">On mobile, use the bottom tabs (Dashboard, Products, Stock, Profit). On desktop, use the left sidebar.</div></div></div>
+      <div class="ob-step"><div class="ob-num">2</div><div class="ob-sc"><div class="ob-st">Add your products</div><div class="ob-sd">Go to Products → tap "+ Add Product". Choose Simple Mode for basic tracking or Advanced Mode for material, labor &amp; fee breakdowns.</div></div></div>
+      <div class="ob-step"><div class="ob-num">3</div><div class="ob-sc"><div class="ob-st">Track stock movements</div><div class="ob-sd">Use the Stock tab to log sales, arrivals, returns, and adjustments. Quantities update automatically.</div></div></div>
+      <div class="ob-step"><div class="ob-num">4</div><div class="ob-sc"><div class="ob-st">Back up your data</div><div class="ob-sd">Your data is stored only on this device. Tap "💾 Save Backup Now" on the Dashboard regularly to protect it.</div></div></div>
+      <div class="ob-protip"><span class="ob-protip-icon">🔒</span><span class="ob-protip-text">100% private — nothing is sent online. Your inventory stays on your device only. Back up often!</span></div>
     </div>
     <div class="ob-foot">
       <button class="ob-cta ob-cta-sample" onclick="loadSampleData();dismissOB()">📦 Load Sample Data — see it in action</button>
@@ -602,14 +743,17 @@ thead th{position:sticky;top:0;z-index:3}
         <div class="sb-item" onclick="switchPage('inventory');openProductModal()">
           <span class="sb-icon">+</span> <span id="sb-add-item">Add Product</span>
         </div>
-        <div class="sb-item" onclick="switchPage('inventory')">
+        <div class="sb-item" onclick="filterByField('category')">
           <span class="sb-icon">🏷</span> Categories
         </div>
-        <div class="sb-item" onclick="switchPage('inventory')">
+        <div class="sb-item" onclick="filterByField('supplier')">
           <span class="sb-icon">🏢</span> Suppliers
         </div>
         <div class="sb-item" id="sb-export-item" onclick="toggleExportPanel()">
           <span class="sb-icon">💾</span> Export &amp; Backup
+        </div>
+        <div class="sb-item" id="sb-install-item" onclick="triggerInstall()" style="display:none">
+          <span class="sb-icon">📲</span> Add to Home Screen
         </div>
         <div class="sb-item" onclick="previewOnboarding()">
           <span class="sb-icon">📖</span> Quick Start Guide
@@ -620,15 +764,22 @@ thead th{position:sticky;top:0;z-index:3}
       </div>
     </nav>
 
-    <!-- Export panel (hidden by default) -->
-    <div id="sb-export-panel" style="display:none;padding:0 12px 10px;border-bottom:1px solid #E8EDF4">
+    <!-- Backup section — always visible -->
+    <div class="sb-backup-section">
+      <div class="sb-backup-title">💾 Your Data</div>
+      <button class="sb-backup-main-btn" onclick="backupData()">💾 Save Backup</button>
+      <label class="sb-restore-main-btn" style="cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        ↩ Restore from Backup
+        <input type="file" accept=".json" style="display:none" onchange="restoreData(event)">
+      </label>
+      <div class="sb-backup-last" id="sb-backup-last">No backup saved yet</div>
+    </div>
+
+    <!-- Additional tools panel -->
+    <div style="padding:0 12px 10px;border-bottom:1px solid #E8EDF4">
       <div class="sb-action-row">
         <button class="sb-action-btn" onclick="exportCSV()">↓ CSV Export</button>
         <label class="sb-action-btn" style="cursor:pointer">↑ CSV Import<input type="file" accept=".csv" style="display:none" onchange="importCSV(event)"></label>
-      </div>
-      <div class="sb-action-row" style="margin-top:6px">
-        <button class="sb-action-btn sb-backup-btn" onclick="backupData()">☁ Save Backup</button>
-        <label class="sb-action-btn sb-restore-btn" style="cursor:pointer">↩ Restore<input type="file" accept=".json" style="display:none" onchange="restoreData(event)"></label>
       </div>
       <div class="sb-action-row" style="margin-top:6px">
         <button class="sb-action-btn" style="flex:1;background:#F0FDF4;color:#16A34A;border-color:#BBF7D0" onclick="loadSampleData()">📦 Load Sample Data</button>
@@ -639,8 +790,8 @@ thead th{position:sticky;top:0;z-index:3}
     </div>
 
     <div class="sb-switch-section">
-      <button class="sb-switch-btn" onclick="alert('Etsy version coming soon!')">🛍 Switch to Etsy</button>
-      <button class="sb-switch-btn" onclick="alert('TikTok Shop version coming soon!')">🎵 Switch to TikTok Shop</button>
+      <button class="sb-switch-btn" onclick="closeSidebar();showToast('🛍','Etsy version coming soon!')">🛍 Switch to Etsy</button>
+      <button class="sb-switch-btn" onclick="closeSidebar();showToast('🎵','TikTok Shop version coming soon!')">🎵 Switch to TikTok Shop</button>
     </div>
 
     <!-- Backup toast -->
@@ -715,6 +866,19 @@ thead th{position:sticky;top:0;z-index:3}
           <div class="stat-label" style="color:var(--green-text)">Total Profit</div>
           <div class="stat-number green" id="d-total-profit">—</div>
           <div class="stat-sub">Total profit</div>
+        </div>
+      </div>
+
+      <!-- ── DATA SAFETY CARD ── -->
+      <div id="data-safety-card" class="data-safety-card">
+        <div class="data-safety-icon" id="ds-icon">💾</div>
+        <div class="data-safety-body">
+          <div class="data-safety-title" id="ds-title">Your data is only saved on this device</div>
+          <div class="data-safety-sub" id="ds-sub">Save a backup file so you don't lose your inventory if you clear your browser or switch devices.</div>
+        </div>
+        <div class="data-safety-btns">
+          <button class="ds-save-btn" onclick="backupData()">💾 Save Backup Now</button>
+          <label class="ds-restore-btn" style="cursor:pointer">↩ Restore from Backup<input type="file" accept=".json" style="display:none" onchange="restoreData(event)"></label>
         </div>
       </div>
 
@@ -867,8 +1031,8 @@ thead th{position:sticky;top:0;z-index:3}
       <div class="tbl-card">
         <div class="tbl-wrap">
           <table><thead><tr>
-            <th class="no-sort" id="th-profit-item">Product</th><th class="no-sort" id="th-profit-cat">Category</th>
-            <th class="no-sort nr">Base Cost</th><th class="no-sort nr">Total Cost/Unit</th><th class="no-sort nr">Sale Price</th>
+            <th class="no-sort" id="th-profit-item">Product</th><th class="no-sort pf-2nd" id="th-profit-cat">Category</th>
+            <th class="no-sort nr pf-2nd">Base Cost</th><th class="no-sort nr pf-2nd">Total Cost/Unit</th><th class="no-sort nr pf-2nd">Sale Price</th>
             <th class="no-sort nr">Profit/Unit</th><th class="no-sort nr">Qty</th>
             <th class="no-sort nr">Total Profit</th><th class="no-sort nr">Margin</th>
           </tr></thead>
@@ -1320,7 +1484,7 @@ function switchPage(name){
   if(mb) mb.innerHTML=`📋 ${labels[name]||C.appName}`;
   // FAB: show on dashboard & inventory, hide on others
   const fab=document.getElementById('fab');
-  if(fab) fab.style.display=(name==='dashboard'||name==='inventory')?'flex':'none';
+  if(fab) fab.style.display=(name==='inventory')?'flex':'none';
   closeSidebar();
   window.scrollTo({top:0,behavior:'smooth'});
   const renders={dashboard:renderDashboard,inventory:renderInventory,movements:renderMovements,profit:renderProfit};
@@ -1328,12 +1492,25 @@ function switchPage(name){
 }
 
 // ─── Onboarding ────────────────────────────────────────────────────────────
-function dismissOB(){document.getElementById('ob').style.display='none';localStorage.setItem('inv_ob','1');}
+function dismissOB(){document.getElementById('ob').style.display='none';localStorage.setItem('inv_ob_v2','1');}
 function previewOnboarding(){closeSidebar();document.getElementById('ob').style.display='flex';}
 function openSettings(){
+  closeSidebar();
   const def=localStorage.getItem('inv_reorder_default')||'';
   document.getElementById('settings-reorder-default').value=def;
   openModal('modal-settings');
+}
+
+// Sidebar Categories / Suppliers: jump to inventory and focus search with a hint
+function filterByField(field){
+  switchPage('inventory');
+  setTimeout(function(){
+    const s=document.getElementById('inv-search');
+    if(s){s.focus();s.scrollIntoView({behavior:'smooth',block:'center'});}
+    if(typeof showToast==='function'){
+      showToast(field==='category'?'🏷':'🏢','Search by '+field+' to filter your inventory');
+    }
+  },280);
 }
 function saveReorderDefault(){
   const v=parseInt(document.getElementById('settings-reorder-default').value);
@@ -1348,9 +1525,10 @@ function loadSampleData(){
   if(loadP().length>0){
     if(!window.confirm('Replace current inventory with sample data?\n\nThis will overwrite everything.')) return;
   }
+  closeSidebar();
   saveP(SAMPLE_PRODUCTS.map(p=>({...p,id:uid()})));
   saveM([]);
-  localStorage.removeItem('inv_ob');
+  localStorage.removeItem('inv_ob_v2');
   document.getElementById('ob-hint').style.display='flex';
   renderDashboard();
   if(document.getElementById('page-inventory').classList.contains('active')) renderInventory();
@@ -1361,8 +1539,9 @@ function loadSampleData(){
 
 function clearData(){
   if(!window.confirm('Clear all inventory data?\n\nThis cannot be undone. Consider saving a backup first.')) return;
+  closeSidebar();
   saveP([]);saveM([]);
-  localStorage.removeItem('inv_ob');
+  localStorage.removeItem('inv_ob_v2');
   document.getElementById('ob-hint').style.display='none';
   renderDashboard();
   if(document.getElementById('page-inventory').classList.contains('active')) renderInventory();
@@ -1483,6 +1662,11 @@ function saveProduct(){
   else products.push(p);
   saveP(products);closeModal('modal-product');
   renderInventory();renderDashboard();
+  // Nudge user to back up after their 3rd+ product if they've never backed up
+  const allProds=loadP();
+  if(!editPid && allProds.length>=3 && !localStorage.getItem('inv_last_backup')){
+    showToast('💾','Tip: Save a backup so you never lose your data!');
+  }
 }
 function deleteProduct(id){
   confirm2('Delete this '+C.item.toLowerCase()+'? This cannot be undone.',()=>{saveP(loadP().filter(p=>p.id!==id));renderInventory();renderDashboard();});
@@ -1562,6 +1746,7 @@ function deleteMovement(id){confirm2('Delete this movement record?',()=>{saveM(l
 
 // ─── Dashboard ─────────────────────────────────────────────────────────────
 function renderDashboard(){
+  updateBackupCard();
   const allProducts=loadP().map(enrich);
   const movements=loadM();
 
@@ -1626,13 +1811,13 @@ function renderDashboard(){
       lstbl.innerHTML='<div style="text-align:center;padding:28px;color:var(--text-mid);font-size:13px">✅ All items are sufficiently stocked</div>';
     } else {
       lstbl.innerHTML=`<table class="ls-tbl">
-        <thead><tr><th>Product</th><th>Category</th><th class="nr">Stock</th><th class="nr">Reorder At</th><th>Status</th></tr></thead>
+        <thead><tr><th>Product</th><th class="ls-hide-mob">Category</th><th class="nr">Stock</th><th class="nr">Reorder At</th><th class="ls-hide-mob">Status</th></tr></thead>
         <tbody>${lowStockItems.slice(0,6).map(p=>`<tr>
-          <td style="font-weight:600">${esc(p.name)}</td>
-          <td style="color:var(--text-mid)">${esc(p.category||'—')}</td>
+          <td style="font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</td>
+          <td class="ls-hide-mob" style="color:var(--text-mid)">${esc(p.category||'—')}</td>
           <td class="nr">${p.qty}</td>
           <td class="nr">${p.ro}</td>
-          <td><span class="badge ${badgeCls(p.status)}">${p.status}</span></td>
+          <td class="ls-hide-mob"><span class="badge ${badgeCls(p.status)}">${p.status}</span></td>
         </tr>`).join('')}</tbody>
       </table>`;
     }
@@ -1707,8 +1892,14 @@ function drawDonut(inStock,lowStock,outOfStock,total){
 }
 
 function toggleExportPanel(){
-  const p=document.getElementById('sb-export-panel');
-  if(p) p.style.display=p.style.display==='none'?'block':'none';
+  const panel=document.querySelector('.sb-backup-section');
+  if(!panel) return;
+  panel.scrollIntoView({behavior:'smooth',block:'center'});
+  panel.style.transition='box-shadow .3s ease, background .3s ease';
+  const prevBg=panel.style.background, prevShadow=panel.style.boxShadow;
+  panel.style.background='#FEF3C7';
+  panel.style.boxShadow='0 0 0 3px rgba(254,191,36,.45)';
+  setTimeout(()=>{panel.style.background=prevBg;panel.style.boxShadow=prevShadow;},1400);
 }
 
 function drawChart(products){
@@ -1890,10 +2081,10 @@ function renderProfit(){
     const m=p.sale>0?p.profitUnit/p.sale:0;
     return`<tr class="${rowCls(p.status)}">
       <td style="font-weight:600">${esc(p.name)}${p.isAdvanced?` <span style="font-size:10px;color:#6B50B8;font-weight:600">⬡</span>`:''}</td>
-      <td>${esc(p.category||'—')}</td>
-      <td class="nr" style="color:var(--text-mid)">${$f(p.cost)}</td>
-      <td class="nr" style="color:var(--text-mid)">${$f(p.totalCost)}${p.isAdvanced?`<br><span style="font-size:10px;color:#6B50B8">+mat/labor/fees</span>`:''}</td>
-      <td class="nr">${$f(p.sale)}</td>
+      <td class="pf-2nd">${esc(p.category||'—')}</td>
+      <td class="nr pf-2nd" style="color:var(--text-mid)">${$f(p.cost)}</td>
+      <td class="nr pf-2nd" style="color:var(--text-mid)">${$f(p.totalCost)}${p.isAdvanced?`<br><span style="font-size:10px;color:#6B50B8">+mat/labor/fees</span>`:''}</td>
+      <td class="nr pf-2nd">${$f(p.sale)}</td>
       <td class="nr" style="font-weight:700;color:${p.profitUnit>=0?'var(--green-text)':'var(--red-text)'}">${$f(p.profitUnit)}</td>
       <td class="nr">${num(p.qty)}</td>
       <td class="nr" style="font-weight:700;color:${p.totalProfit>=0?'var(--green-text)':'var(--red-text)'}">${$f(p.totalProfit)}</td>
@@ -1911,6 +2102,7 @@ function renderProfit(){
 
 // ─── CSV ───────────────────────────────────────────────────────────────────
 function exportCSV(){
+  closeSidebar();
   const rows=loadP().map(enrich);
   const h=[C.itemId.replace(' / ID',''),'Name',C.category,C.supplier,C.storageLocation,'Cost Price','Material Cost','Labor Cost','Additional Fees','Total Cost/Unit','Sale Price',C.qtyInStock,C.reorderAt.replace(' (qty)',''),'Cost Basis','Profit/Unit','Total Profit','Margin %','Status'];
   const data=rows.map(p=>[p.sku,p.name,p.category,p.supplier,p.storageLocation||'',p.cost,p.material,p.labor,p.fees,p.totalCost,p.sale,p.qty,p.ro,p.costBasis,p.profitUnit,p.totalProfit,(p.margin*100).toFixed(1)+'%',p.status]);
@@ -1919,6 +2111,7 @@ function exportCSV(){
 }
 function importCSV(e){
   const file=e.target.files[0];if(!file)return;
+  closeSidebar();
   const reader=new FileReader();
   reader.onload=ev=>{
     const lines=ev.target.result.split('\n').filter(Boolean);if(lines.length<2){alert('CSV appears empty.');return;}
@@ -1944,6 +2137,7 @@ function showToast(icon, msg){
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 function backupData(){
+  closeSidebar();
   const payload={
     version:1,
     exportedAt:new Date().toISOString(),
@@ -1957,23 +2151,52 @@ function backupData(){
   a.download=`inventory-backup-${date}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
-  showToast('✅','Backup saved');
+  localStorage.setItem('inv_last_backup',new Date().toISOString());
+  updateBackupCard();
+  showToast('✅','Backup saved! Keep this file somewhere safe.');
+}
+function updateBackupCard(){
+  const ts=localStorage.getItem('inv_last_backup');
+  const card=document.getElementById('data-safety-card');
+  const icon=document.getElementById('ds-icon');
+  const title=document.getElementById('ds-title');
+  const sub=document.getElementById('ds-sub');
+  const sbLast=document.getElementById('sb-backup-last');
+  if(ts){
+    const d=new Date(ts);
+    const dateStr=d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+    const timeStr=d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+    const label=`Last backed up ${dateStr} at ${timeStr}`;
+    if(card){card.classList.add('backed-up');}
+    if(icon) icon.textContent='✅';
+    if(title) title.textContent='Your backup is up to date';
+    if(sub) sub.textContent=label+'. Save a new backup anytime your inventory changes.';
+    if(sbLast) sbLast.textContent=label;
+  } else {
+    if(card){card.classList.remove('backed-up');}
+    if(icon) icon.textContent='💾';
+    if(title) title.textContent='Your data is only saved on this device';
+    if(sub) sub.textContent='Save a backup file so you don\'t lose your inventory if you clear your browser or switch devices.';
+    if(sbLast) sbLast.textContent='No backup saved yet';
+  }
 }
 function restoreData(e){
   const file=e.target.files[0];if(!file)return;
+  closeSidebar();
   const reader=new FileReader();
   reader.onload=ev=>{
     try{
       const payload=JSON.parse(ev.target.result);
       if(!payload.products||!Array.isArray(payload.products))throw new Error('Invalid backup file.');
-      if(!window.confirm(`Restore ${payload.products.length} ${C.items.toLowerCase()} and ${(payload.movements||[]).length} movements?\n\nThis will replace your current data.`))return;
-      saveP(payload.products);
-      saveM(payload.movements||[]);
-      renderDashboard();
-      if(document.getElementById('page-inventory').classList.contains('active'))renderInventory();
-      if(document.getElementById('page-movements').classList.contains('active'))renderMovements();
-      if(document.getElementById('page-profit').classList.contains('active'))renderProfit();
-      showToast('🎉','Data restored successfully');
+      confirm2(`Restore ${payload.products.length} ${C.items.toLowerCase()} and ${(payload.movements||[]).length} movements? This will replace your current data.`,()=>{
+        saveP(payload.products);
+        saveM(payload.movements||[]);
+        renderDashboard();
+        if(document.getElementById('page-inventory').classList.contains('active'))renderInventory();
+        if(document.getElementById('page-movements').classList.contains('active'))renderMovements();
+        if(document.getElementById('page-profit').classList.contains('active'))renderProfit();
+        showToast('🎉','Data restored successfully!');
+      });
     }catch(err){
       alert('Could not read backup file. Please make sure it\'s a valid inventory backup.');
     }
@@ -2029,10 +2252,126 @@ function applyMobileColDefaults(){
   }
   applyMobileColDefaults();
   applyColState();
-  const firstTime=!localStorage.getItem('inv_ob')&&!hasData;
+  // Show Quick Start Guide on first open only (flag-based, not data-based)
+  const firstTime=!localStorage.getItem('inv_ob_v2');
   document.getElementById('ob').style.display=firstTime?'flex':'none';
-  document.getElementById('ob-hint').style.display=firstTime?'none':'none'; // shown after sample load
+  // Mark as seen immediately so closing the browser won't re-show it next visit
+  if(firstTime) localStorage.setItem('inv_ob_v2','1');
+  document.getElementById('ob-hint').style.display='none';
+  // App starts on dashboard — hide FAB (only shown on inventory page)
+  const fab=document.getElementById('fab');
+  if(fab) fab.style.display='none';
   renderDashboard();
+})();
+</script>
+
+<!-- ── PWA: Service Worker + Install Logic ── -->
+<script>
+(function(){
+  const DISMISSED_KEY = 'pwa_banner_dismissed';
+  const isStandalone  = window.matchMedia('(display-mode: standalone)').matches
+                        || window.navigator.standalone === true;
+  const isIOS         = /ipad|iphone|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const isAndroid     = /android/i.test(navigator.userAgent);
+
+  // Elements
+  const banner      = document.getElementById('pwa-banner');
+  const installBtn  = document.getElementById('pwa-install-btn');
+  const dismissBtn  = document.getElementById('pwa-dismiss-btn');
+  const iosModal    = document.getElementById('ios-modal-bg');
+  const iosClose    = document.getElementById('ios-modal-close');
+  const sbInstall   = document.getElementById('sb-install-item');
+
+  let deferredPrompt = null;
+
+  // ── Register service worker ──────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────────
+  function showSidebarBtn() {
+    if (sbInstall) sbInstall.style.display = '';
+  }
+
+  function hideBanner() {
+    if (banner) banner.classList.remove('show');
+  }
+
+  function showBanner() {
+    if (!banner || localStorage.getItem(DISMISSED_KEY)) return;
+    // Small delay so it doesn't flash on load
+    setTimeout(() => banner.classList.add('show'), 1800);
+    showSidebarBtn();
+  }
+
+  // ── Android / Chrome: native install prompt ──────────────────────
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (!isStandalone) showBanner();
+  });
+
+  window.addEventListener('appinstalled', function() {
+    hideBanner();
+    deferredPrompt = null;
+    if (sbInstall) sbInstall.style.display = 'none';
+  });
+
+  // ── iOS: show instructions modal ─────────────────────────────────
+  if (isIOS && !isStandalone && !localStorage.getItem(DISMISSED_KEY)) {
+    showSidebarBtn();
+    setTimeout(() => {
+      if (iosModal) iosModal.classList.add('show');
+    }, 2000);
+  }
+
+  // ── Button handlers ───────────────────────────────────────────────
+  if (installBtn) {
+    installBtn.addEventListener('click', function() {
+      if (isIOS) {
+        hideBanner();
+        if (iosModal) iosModal.classList.add('show');
+      } else if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function(r) {
+          if (r.outcome === 'accepted') hideBanner();
+          deferredPrompt = null;
+        });
+      }
+    });
+  }
+
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', function() {
+      hideBanner();
+      localStorage.setItem(DISMISSED_KEY, '1');
+    });
+  }
+
+  if (iosClose) {
+    iosClose.addEventListener('click', function() {
+      if (iosModal) iosModal.classList.remove('show');
+      localStorage.setItem(DISMISSED_KEY, '1');
+    });
+  }
+
+  // ── Global trigger (sidebar button + any future call) ────────────
+  window.triggerInstall = function() {
+    if (typeof closeSidebar === 'function') closeSidebar();
+    if (isIOS) {
+      if (iosModal) iosModal.classList.add('show');
+    } else if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(r) {
+        if (r.outcome === 'accepted') hideBanner();
+        deferredPrompt = null;
+      });
+    } else {
+      // Fallback: show banner if somehow triggered without deferredPrompt
+      if (banner) banner.classList.add('show');
+    }
+  };
 })();
 </script>
 </body>
