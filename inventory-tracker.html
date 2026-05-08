@@ -1525,7 +1525,7 @@ function openProductModal(id){
   document.getElementById('sup-list').innerHTML=sups.map(s=>`<option value="${esc(s)}">`).join('');
   const locs=[...new Set(products.map(x=>x.storageLocation).filter(Boolean))];
   document.getElementById('loc-list').innerHTML=locs.map(l=>`<option value="${esc(l)}">`).join('');
-  setCostMode(hasAdv?'advanced':'simple');
+  setCostMode('simple');
   updateProductPreview();
   openModal('modal-product');
   setTimeout(()=>document.getElementById('f-name').focus(),50);
