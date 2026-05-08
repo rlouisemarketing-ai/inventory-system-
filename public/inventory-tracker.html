@@ -45,7 +45,7 @@
 body{font-family:'Segoe UI',Calibri,Arial,sans-serif;background:var(--app-bg);color:var(--text);min-height:100vh;font-size:14px}
 
 /* ── APP SHELL ── */
-.app{display:flex;min-height:100vh}
+.app{display:flex;min-height:100vh;overflow-x:hidden;width:100%}
 
 /* ── SIDEBAR ── */
 .sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid #E2E8F0;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;overflow-y:auto;z-index:200;transition:transform .25s}
@@ -77,7 +77,7 @@ body{font-family:'Segoe UI',Calibri,Arial,sans-serif;background:var(--app-bg);co
 .sb-privacy-text{font-size:10px;color:#4A7A40;line-height:1.45;font-weight:500}
 
 /* ── MAIN CONTENT ── */
-.content{margin-left:var(--sidebar-w);flex:1;padding:36px 36px 60px;min-height:100vh}
+.content{margin-left:var(--sidebar-w);flex:1;min-width:0;padding:36px 36px 60px;min-height:100vh}
 @media(max-width:900px){
   .content{margin-left:0;padding:20px 16px 60px}
   .sidebar{transform:translateX(-100%)}
@@ -372,8 +372,8 @@ tbody tr.status-out-of-stock{background:#FFF0F0}
 /* ══════════════════════════════════════════════
    MOBILE-FIRST ENHANCEMENTS
    ══════════════════════════════════════════════ */
-html{scroll-behavior:smooth;overflow-x:hidden}
-body{-webkit-text-size-adjust:100%;overflow-x:hidden;width:100%}
+html{scroll-behavior:smooth;overflow-x:hidden;max-width:100%}
+body{-webkit-text-size-adjust:100%;overflow-x:hidden;max-width:100%;position:relative}
 
 /* Global: minimum tap target for all interactive elements */
 .btn{min-height:44px}
@@ -478,6 +478,19 @@ thead th{position:sticky;top:0;z-index:3}
   /* Mode toggle: full width */
   .mode-toggle{width:100%;display:grid;grid-template-columns:1fr 1fr}
   .mode-btn{min-height:40px}
+
+  /* ── Profit table: hide secondary columns ── */
+  /* Keep: Product, Profit/Unit, Qty, Total Profit, Margin */
+  .ptcol-cat,.ptcol-base,.ptcol-tcost,.ptcol-sale{display:none}
+
+  /* ── Profit-by-category table: hide Products count and Cost ── */
+  .pctcol-count,.pctcol-cost{display:none}
+
+  /* ── Movements table: hide SKU, Price, Notes ── */
+  .movcol-sku,.movcol-price,.movcol-notes{display:none}
+
+  /* ── Prevent content from overflowing the viewport ── */
+  .content{overflow-x:hidden}
 }
 
 /* ── BREAKPOINT: SMALL PHONES ≤ 480px ── */
@@ -815,15 +828,15 @@ thead th{position:sticky;top:0;z-index:3}
       </div>
       <div class="tbl-card">
         <div class="tbl-wrap">
-          <table><thead><tr>
+          <table id="mov-tbl"><thead><tr>
             <th class="no-sort">Date</th>
-            <th class="no-sort">SKU</th>
+            <th class="no-sort movcol-sku">SKU</th>
             <th class="no-sort">Item</th>
             <th class="no-sort">Type</th>
             <th class="no-sort nr">Qty</th>
-            <th class="no-sort nr">Price</th>
+            <th class="no-sort nr movcol-price">Price</th>
             <th class="no-sort">Status</th>
-            <th class="no-sort">Notes</th>
+            <th class="no-sort movcol-notes">Notes</th>
             <th class="no-sort"></th>
           </tr></thead>
           <tbody id="mov-body"></tbody></table>
@@ -851,9 +864,9 @@ thead th{position:sticky;top:0;z-index:3}
       <div class="sec-head">Profit by Product</div>
       <div class="tbl-card">
         <div class="tbl-wrap">
-          <table><thead><tr>
-            <th class="no-sort" id="th-profit-item">Product</th><th class="no-sort" id="th-profit-cat">Category</th>
-            <th class="no-sort nr">Base Cost</th><th class="no-sort nr">Total Cost/Unit</th><th class="no-sort nr">Sale Price</th>
+          <table id="profit-tbl"><thead><tr>
+            <th class="no-sort" id="th-profit-item">Product</th><th class="no-sort ptcol-cat" id="th-profit-cat">Category</th>
+            <th class="no-sort nr ptcol-base">Base Cost</th><th class="no-sort nr ptcol-tcost">Total Cost/Unit</th><th class="no-sort nr ptcol-sale">Sale Price</th>
             <th class="no-sort nr">Profit/Unit</th><th class="no-sort nr">Qty</th>
             <th class="no-sort nr">Total Profit</th><th class="no-sort nr">Margin</th>
           </tr></thead>
@@ -863,9 +876,9 @@ thead th{position:sticky;top:0;z-index:3}
       <div class="sec-head">Profit by Category</div>
       <div class="tbl-card">
         <div class="tbl-wrap">
-          <table><thead><tr>
-            <th class="no-sort" id="th-profcat-cat">Category</th><th class="no-sort nr" id="th-profcat-count">Products</th>
-            <th class="no-sort nr">Revenue</th><th class="no-sort nr">Cost</th>
+          <table id="profit-cat-tbl"><thead><tr>
+            <th class="no-sort" id="th-profcat-cat">Category</th><th class="no-sort nr pctcol-count" id="th-profcat-count">Products</th>
+            <th class="no-sort nr">Revenue</th><th class="no-sort nr pctcol-cost">Cost</th>
             <th class="no-sort nr">Profit</th><th class="no-sort nr">Margin</th>
           </tr></thead>
           <tbody id="profit-cat-body"></tbody></table>
@@ -1719,13 +1732,13 @@ function renderMovements(){
       const tc=isIn?'var(--green-text)':'var(--red-text)';
       return`<tr>
         <td style="white-space:nowrap;color:var(--text-mid);font-size:12px">${dateStr(m.date)}</td>
-        <td style="color:var(--text-mid);font-size:12px">${esc(m.sku||'—')}</td>
+        <td class="movcol-sku" style="color:var(--text-mid);font-size:12px">${esc(m.sku||'—')}</td>
         <td style="font-weight:600">${esc(m.itemName||'—')}</td>
         <td style="color:${tc};font-weight:600">${esc(m.type)}</td>
         <td class="nr" style="color:${tc};font-weight:700">${isIn?'+':'−'}${num(m.qty)}</td>
-        <td class="nr">${m.price?$f(m.price):'—'}</td>
+        <td class="nr movcol-price">${m.price?$f(m.price):'—'}</td>
         <td><span class="badge ${badgeCls(m.status)}">${esc(m.status)}</span></td>
-        <td style="color:var(--text-mid);font-size:12px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.notes||'')}</td>
+        <td class="movcol-notes" style="color:var(--text-mid);font-size:12px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.notes||'')}</td>
         <td style="text-align:right;white-space:nowrap">
           <button class="icon-btn" title="Edit" onclick="openMovementModal('${m.id}')">✏️</button>
           <button class="icon-btn" title="Delete" onclick="deleteMovement('${m.id}')">🗑️</button>
@@ -1751,10 +1764,10 @@ function renderProfit(){
     const m=p.sale>0?p.profitUnit/p.sale:0;
     return`<tr class="${rowCls(p.status)}">
       <td style="font-weight:600">${esc(p.name)}${p.isAdvanced?` <span style="font-size:10px;color:#6B50B8;font-weight:600">⬡</span>`:''}</td>
-      <td>${esc(p.category||'—')}</td>
-      <td class="nr" style="color:var(--text-mid)">${$f(p.cost)}</td>
-      <td class="nr" style="color:var(--text-mid)">${$f(p.totalCost)}${p.isAdvanced?`<br><span style="font-size:10px;color:#6B50B8">+mat/labor/fees</span>`:''}</td>
-      <td class="nr">${$f(p.sale)}</td>
+      <td class="ptcol-cat">${esc(p.category||'—')}</td>
+      <td class="nr ptcol-base" style="color:var(--text-mid)">${$f(p.cost)}</td>
+      <td class="nr ptcol-tcost" style="color:var(--text-mid)">${$f(p.totalCost)}${p.isAdvanced?`<br><span style="font-size:10px;color:#6B50B8">+mat/labor/fees</span>`:''}</td>
+      <td class="nr ptcol-sale">${$f(p.sale)}</td>
       <td class="nr" style="font-weight:700;color:${p.profitUnit>=0?'var(--green-text)':'var(--red-text)'}">${$f(p.profitUnit)}</td>
       <td class="nr">${num(p.qty)}</td>
       <td class="nr" style="font-weight:700;color:${p.totalProfit>=0?'var(--green-text)':'var(--red-text)'}">${$f(p.totalProfit)}</td>
@@ -1764,8 +1777,8 @@ function renderProfit(){
   const catMap={};
   products.forEach(p=>{const c=p.category||'Uncategorized';if(!catMap[c])catMap[c]={rev:0,cost:0,profit:0,count:0};catMap[c].rev+=p.sale*p.qty;catMap[c].cost+=p.costBasis;catMap[c].profit+=p.totalProfit;catMap[c].count++;});
   document.getElementById('profit-cat-body').innerHTML=Object.entries(catMap).sort((a,b)=>b[1].profit-a[1].profit).map(([c,d])=>`
-    <tr><td style="font-weight:600">${esc(c)}</td><td class="nr" style="color:var(--text-mid)">${d.count}</td>
-    <td class="nr">${$f(d.rev)}</td><td class="nr" style="color:var(--text-mid)">${$f(d.cost)}</td>
+    <tr><td style="font-weight:600">${esc(c)}</td><td class="nr pctcol-count" style="color:var(--text-mid)">${d.count}</td>
+    <td class="nr">${$f(d.rev)}</td><td class="nr pctcol-cost" style="color:var(--text-mid)">${$f(d.cost)}</td>
     <td class="nr" style="font-weight:700;color:${d.profit>=0?'var(--green-text)':'var(--red-text)'}">${$f(d.profit)}</td>
     <td class="nr">${d.rev>0?pct(d.profit/d.rev):'—'}</td></tr>`).join('');
 }
