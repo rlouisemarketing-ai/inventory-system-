@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title id="page-title">Inventory Control Dashboard</title>
+<meta name="theme-color" content="#5B99D9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Inventory">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
 <style>
 :root {
   --blue-bg:    #E8F0F7;
@@ -36,7 +42,7 @@
 body{font-family:'Segoe UI',Calibri,Arial,sans-serif;background:var(--app-bg);color:var(--text);min-height:100vh;font-size:14px}
 
 /* ── APP SHELL ── */
-.app{display:flex;min-height:100vh}
+.app{display:flex;min-height:100vh;overflow-x:hidden;width:100%}
 
 /* ── SIDEBAR ── */
 .sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid #E2E8F0;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;overflow-y:auto;z-index:200;transition:transform .25s}
@@ -367,8 +373,8 @@ tbody tr.status-out-of-stock{background:#FFF0F0}
 /* ══════════════════════════════════════════════
    MOBILE-FIRST ENHANCEMENTS
    ══════════════════════════════════════════════ */
-html{scroll-behavior:smooth}
-body{-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;overflow-x:hidden;max-width:100%}
+body{-webkit-text-size-adjust:100%;overflow-x:hidden;max-width:100%;position:relative}
 
 /* Global: minimum tap target for all interactive elements */
 .btn{min-height:44px}
@@ -529,7 +535,7 @@ thead th{position:sticky;top:0;z-index:3}
 /* ── FLOATING ACTION BUTTON ── */
 .fab{display:none;position:fixed;bottom:76px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--chart-blue);color:#fff;border:none;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 4px 16px rgba(91,153,217,.5);z-index:150;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent}
 .fab:active{transform:scale(.93);box-shadow:0 2px 8px rgba(91,153,217,.4)}
-@media(max-width:900px){.fab{display:flex}.tbl-wrap{padding-right:62px}}
+@media(max-width:900px){.fab{display:flex}}
 
 /* ── NEW DASHBOARD ── */
 .dash-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap;gap:12px}
