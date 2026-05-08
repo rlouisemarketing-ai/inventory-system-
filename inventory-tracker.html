@@ -415,7 +415,8 @@ thead th{position:sticky;top:0;z-index:3}
   .fi input,.fi select,.search,.fsel,input,select{font-size:16px !important}
 
   /* Contained scrollable tables with sticky headers */
-  .tbl-wrap{overflow:auto;max-height:62vh;border-radius:0 0 var(--radius) var(--radius)}
+  .tbl-wrap{overflow:auto;max-height:62vh;border-radius:0 0 var(--radius) var(--radius);scrollbar-width:none;-ms-overflow-style:none}
+  .tbl-wrap::-webkit-scrollbar{width:0;height:0}
   thead th{position:sticky;top:0;z-index:3;background:var(--blue-bg);box-shadow:0 1px 0 var(--gray)}
 
   /* Bigger row tap targets */
